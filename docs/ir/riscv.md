@@ -284,10 +284,29 @@ main:
 
 注意, 上述转换并不唯一, 你可以在 Tigger 转换到 RISC-V 汇编的过程中进行额外的优化, 从而得到性能更高/体积更小的指令序列.
 
-## 运行/调试生成的 RISC-V 汇编
+## 运行生成的 RISC-V 汇编
 
-> 施工中...
+我们在 [GitHub 上](https://github.com/pku-minic/open-test-cases/blob/master/risc-v/Dockerfile)提供了可编译/汇编/运行 32-bit RISC-V 程序的 Docker 镜像, 你可以借此在 Docker 中调试你的编译器.
 
-## 常见问题
+首先, 你需要[安装 Docker](https://docs.docker.com/get-docker/), 然后执行:
 
-> 施工中...
+```
+$ git clone https://github.com/pku-minic/open-test-cases
+$ cd open-test-cases/risc-v
+$ docker build -t riscv-dev-env .
+```
+
+Docker 会根据 `risc-v` 目录中的 `Dockerfile` 完成镜像的构建. 此后, 你可以将宿主机内的目录设为与 Docker 共享, 然后执行:
+
+```
+$ docker run -it --rm riscv-dev-env
+```
+
+来运行构建完毕的镜像. 假设编译器生成的 RISC-V 汇编文件为 `output.S`, 你可以在 **Docker 容器中**执行如下命令来调用 RISC-V 工具链和 QEMU 汇编并运行该程序:
+
+```
+$ riscv32-unknown-linux-gnu-gcc output.S -o output -L/root -lsysy -static
+$ qemu-riscv32-static output
+```
+
+如果有其他疑问, 请参考 Docker 官方提供的[相关文档](https://docs.docker.com/).
