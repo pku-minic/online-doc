@@ -20,6 +20,12 @@ $ cd build
 $ cmake .. && make -j8
 ```
 
+注意: 如果你使用的是 Windows 操作系统, 在执行 `cmake .. && make -j8` 命令之前, 你需要先进入 `MiniVM\3rdparty\xstl` 目录, 删除该目录中原先的 `xstl` 文件, 并使用**管理员权限**执行 `new-item` 命令在此处建立新的符号链接:
+
+```
+PS> new-item -itemtype symboliclink -path . -name xstl -value .\src\
+```
+
 编译完成的 MiniVM 会出现在 `build` 目录内:
 
 ```
@@ -34,7 +40,7 @@ which is designed for PKU compiler course.
 Copyright (C) 2010-2020 MaxXing. License GPLv3.
 ```
 
-需要注意的是, MiniVM 暂未在 Windows 和基于 M1 芯片的 macOS 平台上进行过任何测试, 但理论上在这些平台使用 MiniVM 时并不会出现太多问题. 如果你在上述平台中编译/使用 MiniVM 时遇到了问题, 欢迎向我们反馈, 我们会结合你的情况调整并更新 MiniVM, 十分感谢.
+需要注意的是, MiniVM 暂未在基于 M1 芯片的 macOS 平台 (以及其他非 `x86-64` 架构平台) 上进行过任何测试, 但理论上在这些平台使用 MiniVM 时并不会出现太多问题. 如果你在上述平台中编译/使用 MiniVM 时遇到了问题, 欢迎向我们反馈, 我们会结合你的情况调整并更新 MiniVM, 十分感谢.
 
 ## 运行 Eeyore/Tigger 程序
 
