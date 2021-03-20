@@ -19,4 +19,5 @@
 * [5. 在线评测系统](oj/)
   * [5.1. 提交代码](oj/gitlab.md)
   * [5.2. 开始评测](oj/judging.md)
-  * [5.3. 常见问题](oj/faq.md)
+  * [5.3. 本地测试](oj/testing.md)
+  * [5.4. 常见问题](oj/faq.md)
