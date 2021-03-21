@@ -17,7 +17,7 @@
   * [4.3. 使用 MiniVM 调试](ir/minivm.md)
   * [4.4. 将 Tigger 转换为 RISC-V 汇编](ir/riscv.md)
 * [5. 在线评测系统](oj/)
-  * [5.1. 提交代码](oj/gitlab.md)
+  * [5.1. 提交代码](oj/committing.md)
   * [5.2. 开始评测](oj/judging.md)
   * [5.3. 本地测试](oj/testing.md)
   * [5.4. 常见问题](oj/faq.md)
