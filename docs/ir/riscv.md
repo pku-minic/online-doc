@@ -182,6 +182,8 @@ v2 = malloc 800012
 * `op`: 泛指要执行的操作, 请参考表中的其他项将其替换为对应的操作.
 * `STK`: 同前文[函数声明](ir/riscv.md?id=函数声明)部分的 `STK`.
 
+RISC-V 官方提供了[指令集手册](https://github.com/riscv/riscv-isa-manual/releases/download/Ratified-IMAFDQC/riscv-spec-20191213.pdf)来解释上述指令的含义, 你可以参考其中的 RV32I, “M” Extension, 以及 RISC-V Assembly Programmer’s Handbook 部分.
+
 ## 示例
 
 Tigger 程序:
