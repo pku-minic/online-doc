@@ -115,28 +115,30 @@ main() {
 我们可以将其书写为 EBNF 格式:
 
 ```ebnf
-Program     ::= {FunctionDef};
-FunctionDef ::= IDENT "(" [ArgsDef] ")" Block;
-ArgsDef     ::= IDENT {"," IDENT};
+Program       ::= {FunctionDef};
+FunctionDef   ::= IDENT "(" [ArgsDef] ")" Block;
+ArgsDef       ::= IDENT {"," IDENT};
 
-Block       ::= "{" {Statement} "}";
-Statement   ::= IDENT ":=" Expression
-              | IDENT "=" Expression
-              | IfElse
-              | "return" Expression;
-IfElse      ::= "if" Expression Block ["else" (IfElse | Block)];
+Block         ::= "{" {Statement} "}";
+Statement     ::= IDENT ":=" Expression
+                | IDENT "=" Expression
+                | FunctionCall
+                | IfElse
+                | "return" Expression;
+IfElse        ::= "if" Expression Block ["else" (IfElse | Block)];
 
-Expression  ::= LOrExpr;
-LOrExpr     ::= LAndExpr {"||" LAndExpr};
-LAndExpr    ::= EqExpr {"&&" EqExpr};
-EqExpr      ::= RelExpr {("==" | "!=") RelExpr};
-RelExpr     ::= AddExpr {("<" | "<=") AddExpr};
-AddExpr     ::= MulExpr {("+" | "-") MulExpr};
-MulExpr     ::= UnaryExpr {("*" | "/" | "%") UnaryExpr};
-UnaryExpr   ::= ["-" | "!"] Value;
-Value       ::= INTEGER
-              | IDENT
-              | IDENT "(" [Args] ")"
-              | "(" Expression ")";
-Args        ::= Expression {"," Expression};
+Expression    ::= LOrExpr;
+LOrExpr       ::= LAndExpr {"||" LAndExpr};
+LAndExpr      ::= EqExpr {"&&" EqExpr};
+EqExpr        ::= RelExpr {("==" | "!=") RelExpr};
+RelExpr       ::= AddExpr {("<" | "<=") AddExpr};
+AddExpr       ::= MulExpr {("+" | "-") MulExpr};
+MulExpr       ::= UnaryExpr {("*" | "/" | "%") UnaryExpr};
+UnaryExpr     ::= ["-" | "!"] Value;
+Value         ::= INTEGER
+                | IDENT
+                | FunctionCall
+                | "(" Expression ")";
+FunctionCall  ::= IDENT "(" [Args] ")";
+Args          ::= Expression {"," Expression};
 ```
