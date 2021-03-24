@@ -14,9 +14,11 @@
 
 ```first-step
 # 定义变量 `x`, 初始值为 1
-x = 1
+x := 1
 # 定义变量 `y`, 初始值为 2
-y = 2
+y := 2
+# 修改变量 `x`
+x = x + 1
 ```
 
 ## 运算符
@@ -30,17 +32,17 @@ y = 2
 运算符的优先级和结合性同 C/C++.
 
 ```first-step
-x = 1
-y = 2
+x := 1
+y := 2
 
 # `z` 的值为 0
-z = y - x * 2
+z := y - x * 2
 
 # `b1` 的值为某个非零值
-b1 = y || z
+b1 := y || z
 
 # `b2` 的值为 0
-b2 = y && z
+b2 := y && z
 ```
 
 ## 控制流
@@ -51,8 +53,8 @@ b2 = y && z
 * `return x`: 从函数中返回, 返回值为 `x`.
 
 ```first-step
-x = 1
-y = 2
+x := 1
+y := 2
 
 if x < y {
   x = x + 1
@@ -100,7 +102,7 @@ main() {
 
 ```first-step
 main() {
-  x = input()
+  x := input()
   print(x + 1)
   return 0
 }
@@ -118,7 +120,8 @@ FunctionDef ::= IDENT "(" [ArgsDef] ")" Block;
 ArgsDef     ::= IDENT {"," IDENT};
 
 Block       ::= "{" {Statement} "}";
-Statement   ::= IDENT "=" Expression
+Statement   ::= IDENT ":=" Expression
+              | IDENT "=" Expression
               | IfElse
               | "return" Expression;
 IfElse      ::= "if" Expression Block ["else" (IfElse | Block)];
