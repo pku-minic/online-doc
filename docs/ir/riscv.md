@@ -146,8 +146,8 @@ v2 = malloc 800012
 | reg1 = reg2 % reg3    | rem reg1, reg2, reg3                                        |
 | reg1 = reg2 < reg3    | slt reg1, reg2, reg3                                        |
 | reg1 = reg2 > reg3    | sgt reg1, reg2, reg3                                        |
-| reg1 = reg2 <= reg3   | sgt reg1, reg2, reg3<br>not reg1, reg1                      |
-| reg1 = reg2 >= reg3   | slt reg1, reg2, reg3<br>not reg1, reg1                      |
+| reg1 = reg2 <= reg3   | sgt reg1, reg2, reg3<br>seqz reg1, reg1                     |
+| reg1 = reg2 >= reg3   | slt reg1, reg2, reg3<br>seqz reg1, reg1                     |
 | reg1 = reg2 && reg3   | snez reg2, reg2<br>snez reg3, reg3<br>and reg1, reg2, reg3  |
 | reg1 = reg2 \|\| reg3 | or reg1, reg2, reg3<br>snez reg1, reg1                      |
 | reg1 = reg2 != reg3   | xor reg1, reg2, reg3<br>snez reg1, reg1                     |
@@ -155,6 +155,8 @@ v2 = malloc 800012
 | reg1 = reg2 + int12   | addi reg1, reg2, int12                                      |
 | reg1 = reg2 < int12   | slti reg1, reg2, int12                                      |
 | reg1 = reg2 op int    | li t0, int<br>op reg1, reg2, t0                             |
+| reg1 = -reg2          | neg reg1, reg2                                              |
+| reg1 = !reg2          | seqz reg1, reg2                                             |
 | reg1 = reg2           | mv reg1, reg2                                               |
 | reg1[int12] = reg2    | sw reg2, int12(reg1)                                        |
 | reg1 = reg2[int12]    | lw reg1, int12(reg2)                                        |
