@@ -12,7 +12,7 @@
 
 ## token 的类型
 
-从上一节的 [EBNF 定义](step-by-step/beginning.md?id=EBNF%20格式的语法定义)中, 我们可以发现 lexer 必须能够将输入流切成如下几类 token:
+从上一节的 [EBNF 定义](step-by-step/beginning.md?id=ebnf-格式的语法定义)中, 我们可以发现 lexer 必须能够将输入流切成如下几类 token:
 
 * `IDENT`: 标识符, 在 `first-step` 中, 为任意以字母或下划线开头, 后接零个或多个字母, 下划线或数字的字符串.
 * `INTEGER`: 整数, 即 0, 或由非零数字开头, 后接零个或多个数字的字符串.
