@@ -145,9 +145,9 @@ Debugger commands:
     * Eeyore/Tigger 源代码的行数, 形如 `:123`
     * MiniVM 程序计数器 (`pc`) 的值, 形如 `123`
     * Eeyore/Tigger 程序中的函数或标号, 形如: `f_func` 或 `l0`.
-* `EXPR`: 包含四则运算, 逻辑运算, 位运算, 比较运算的二元或一元表达式, 表达式中可以包含:
+* `EXPR`: 包含四则运算, 逻辑运算, 位运算, 比较运算的表达式, 表达式中可以包含:
     * 整数常量, 形如 `1`, `12450`
-    * Eeyore/Tigger 中的变量, 形如 `T0`, `t1`, `p2`
+    * Eeyore/Tigger 中的变量, 形如 `T0`, `t1`, `p2` 或 `$frame` (在 Tigger 中指代[当前栈帧](https://github.com/pku-minic/MiniVM/blob/master/src/vm/README.md#passing-parameters))
     * 寄存器标号, 形如 `$s0`, `$a0`, `$pc`
     * 对某个内存地址的访问, 形如 `*T0`, `*(T0 + 12)` 或其他更复杂的带 `*` 的表达式.
 
