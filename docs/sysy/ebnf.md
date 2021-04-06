@@ -15,7 +15,7 @@ Decl          ::= ConstDecl | VarDecl;
 ConstDecl     ::= "const" BType ConstDef {"," ConstDef} ";";
 BType         ::= "int";
 ConstDef      ::= IDENT {"[" ConstExp "]"} "=" ConstInitVal;
-ConstInitVal  ::= ConstExp | "{" [CpnstInitVal {"," ConstInitVal}] "}";
+ConstInitVal  ::= ConstExp | "{" [ConstInitVal {"," ConstInitVal}] "}";
 VarDecl       ::= BType VarDef {"," VarDef} ";";
 VarDef        ::= IDENT {"[" ConstExp "]"}
                 | IDENT {"[" ConstExp "]"} "=" InitVal;
