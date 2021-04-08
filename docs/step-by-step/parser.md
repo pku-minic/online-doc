@@ -314,4 +314,7 @@ ASTPtr ParseStatement() {
 
 ## 完整代码
 
-请参考 GitHub 上 [`first-step` repo](https://github.com/pku-minic/first-step) 中的 [parser.h](https://github.com/pku-minic/first-step/blob/master/src/front/parser.h) 和 [parser.cpp](https://github.com/pku-minic/first-step/blob/master/src/front/parser.cpp).
+请参考 GitHub 上 [`first-step` repo](https://github.com/pku-minic/first-step) 中的:
+
+* **AST 定义**: [ast.h](https://github.com/pku-minic/first-step/blob/master/src/define/ast.h).
+* **parser 实现**: [parser.h](https://github.com/pku-minic/first-step/blob/master/src/front/parser.h) 和 [parser.cpp](https://github.com/pku-minic/first-step/blob/master/src/front/parser.cpp).
