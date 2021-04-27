@@ -62,7 +62,7 @@ int e[4][2] = {{d[2][1], c[2][1]}, {3, 4}, {5, 6}, {7, 8}};
 ## 初值
 
 ```ebnf
-ConstInitVal  ::= ConstExp | "{" [CpnstInitVal {"," ConstInitVal}] "}";
+ConstInitVal  ::= ConstExp | "{" [ConstInitVal {"," ConstInitVal}] "}";
 InitVal       ::= Exp | "{" [InitVal {"," InitVal}] "}";
 ```
 
