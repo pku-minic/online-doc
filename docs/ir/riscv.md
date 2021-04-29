@@ -148,7 +148,7 @@ v2 = malloc 800012
 | reg1 = reg2 > reg3    | sgt reg1, reg2, reg3                                        |
 | reg1 = reg2 <= reg3   | sgt reg1, reg2, reg3<br>seqz reg1, reg1                     |
 | reg1 = reg2 >= reg3   | slt reg1, reg2, reg3<br>seqz reg1, reg1                     |
-| reg1 = reg2 && reg3   | snez reg2, reg2<br>snez reg3, reg3<br>and reg1, reg2, reg3  |
+| reg1 = reg2 && reg3   | snez reg1, reg2<br>snez t0, reg3<br>and reg1, reg1, t0      |
 | reg1 = reg2 \|\| reg3 | or reg1, reg2, reg3<br>snez reg1, reg1                      |
 | reg1 = reg2 != reg3   | xor reg1, reg2, reg3<br>snez reg1, reg1                     |
 | reg1 = reg2 == reg3   | xor reg1, reg2, reg3<br>seqz reg1, reg1                     |
