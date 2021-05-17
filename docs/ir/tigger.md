@@ -203,8 +203,8 @@ l1:
   t0 = a0
   t1 = 4
   t2 = s0 * t1
-	loadaddr v1 t3
-	t3 = t3 + t2
+  loadaddr v1 t3
+  t3 = t3 + t2
   t3[0] = t0
   t4 = t3[0]
   s1 = s1 + t4
