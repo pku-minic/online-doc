@@ -46,20 +46,32 @@ Eeyore 中的局部变量都可以在 Tigger 的栈中找到, 因此 Tigger 中�
 
 举个例子, 假设某个时刻函数调用关系是 `f_main[0][3] -> f_f[0][4]`, 正在执行函数 `f_f`, 则此时的栈如下表所示:
 
+> 注: 如下的例子只适用于 Tigger, 在 RISC-V 程序中, 栈的 layout 和下述情况略有不同.
+
 <table>
 <thead>
   <tr>
     <th>地址</th>
-    <th>0x100</th>
-    <th>0x104</th>
-    <th>0x108</th>
-    <th>0x10c</th>
-    <th>0x110</th>
-    <th>0x114</th>
-    <th>0x118</th>
+    <th>0x00</th>
+    <th>0x04</th>
+    <th>0x08</th>
+    <th>0x0c</th>
+    <th>0x10</th>
+    <th>0x14</th>
+    <th>0x18</th>
   </tr>
 </thead>
 <tbody>
+  <tr>
+    <td>栈偏移量<br></td>
+    <td>0</td>
+    <td>1</td>
+    <td>2</td>
+    <td>0</td>
+    <td>1</td>
+    <td>2</td>
+    <td>3</td>
+  </tr>
   <tr>
     <td>内容<br></td>
     <td>3</td>
@@ -78,7 +90,7 @@ Eeyore 中的局部变量都可以在 Tigger 的栈中找到, 因此 Tigger 中�
 </tbody>
 </table>
 
-此时语句 `load 2 s0`, 会将 `s0` 的值更新为 5; 语句 `loadaddr 2 s0`, 会将 `s0` 的值更新为 `0x110`; 语句 `store s0 2` 会将栈中地址 `0x110` 处内存的值更新为 `s0` 寄存器的值.
+此时语句 `load 2 s0`, 会将 `s0` 的值更新为 0; 语句 `loadaddr 2 s0`, 会将 `s0` 的值更新为 `0x14`; 语句 `store s0 2` 会将栈中地址 `0x14` 处内存的值更新为 `s0` 寄存器的值.
 
 ### 全局变量
 
