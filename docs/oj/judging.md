@@ -32,20 +32,23 @@
 
 在提交前请仔细阅读界面左侧的内容, 它能帮助你解决大部分你可能会遇到的问题.
 
-界面的右侧是代码编辑区域, 但请注意, 此处应该填写你在 [5.1 节](oj/committing.md)中创建得到的 repo URL, 而**不是**你编译器的源代码. 例如:
+界面的右侧是代码编辑区域, 但请注意, 此处应该填写你在 [5.1 节](oj/committing.md)中提到的 repo URL, 而**不是**你编译器的源代码. 例如:
 
 ```
-https://MaxXing:-5dzfbjLsYsstYACyT2T@gitlab.eduxiji.net/MaxXing/pku-minic-test.git
+https://gitlab.eduxiji.net/MaxXing/pku-minic-test.git
 ```
 
-如果你要评测的代码并不位于 `master` 分支, 而是位于其他分支, 比如 `debug`, 则你可以在第二行写明需要让评测系统 clone 的分支名称. 如果第二行留空, 则系统会 clone `master` 分支.
+如果你需要提交仓库的某个分支, 你可以使用如下的格式:
 
 ```
-https://MaxXing:-5dzfbjLsYsstYACyT2T@gitlab.eduxiji.net/MaxXing/pku-minic-test.git
-debug
+https://gitlab.eduxiji.net/用户名/仓库名.git 分支名
 ```
 
-> 如果你决定提交你的 GitHub repo, 请注意: 默认情况下, 由 GitHub 自己初始化的 repo 的主分支名称为 `main`, 而非 `master`. 所以此时你必须在第二行写 `main`.
+或者:
+
+```
+https://gitlab.eduxiji.net/用户名/仓库名.git --branch=分支名
+```
 
 填写完成后, 点击 “提交” 按钮, 即可将代码提交至系统进行在线评测. 评测结果会在几分钟后展示在控制台窗口中.
 
