@@ -53,3 +53,22 @@ https://gitlab.eduxiji.net/用户名/仓库名.git --branch=分支名
 填写完成后, 点击 “提交” 按钮, 即可将代码提交至系统进行在线评测. 评测结果会在几分钟后展示在控制台窗口中.
 
 ![judging-2](judging-2.png)
+
+## 检查评测结果
+
+评测完成后, 平台会返回评测结果. 评测结果包括:
+
+* **GPE**: Git Pull Error, 评测机在拉取你的项目时出现了问题.
+* **CCE**: Compile Compiler Error, 评测机在编译你提交的编译器项目时出现了问题.
+* **CCTLE**: Compile Compiler Time Limit Exceeded, 评测机在编译你提交的编译器项目时超时 (超过 120s).
+* **CTE**: Compile Testcase Error, 评测机在使用你提交的编译器编译测试用例时出现了问题.
+* **CTTLE**: Compile Testcase Time Limit Exceeded, 评测机在使用你提交的编译器编译测试用例时超时 (编译单个用例的时间超过 120s).
+* **AE**: Assemble Error, 评测机在汇编你的编译器生成的汇编代码时出现了问题.
+* **ATLE**: Assemble Time Limit Exceeded, 评测机在汇编你的编译器生成的汇编代码时超时 (汇编单个用例的时间超过 60s).
+* **RE**: Runtime Error, 评测机在运行你的编译器生成的测试用例时出现了问题.
+* **RTLE**: Runtime Time Limit Exceeded, 评测机在运行你的编译器生成的测试用例时超时 (运行单个用例的时间超过 120s).
+* **TIE**: Time Info Error, 评测机运行生成的测试用例时没有找到运行时间信息. 这个错误只会在进行性能测试时出现, 通常是因为你的编译器没有正确处理 `starttime`/`stoptime` 库函数.
+* **WA**: Wrong Answer, 评测机运行生成的测试用例时, 检测到输出结果和预期输出不符.
+* **AC**: Accepted, 所有功能测试的结果均正确.
+* **SE**: System Error, 评测机出现了意料之中 (?) 的内部错误.
+* **UE**: Unexpected Error, 评测机出现了不可预料的内部错误. 遇到这种情况时请立即联系助教, 评测机觉得自己还能再抢救一下.
