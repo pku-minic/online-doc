@@ -19,6 +19,6 @@ repo 中包含若干目录:
 
 ## 获取评测机环境的 Docker 镜像
 
-你可以在 GitHub 上的 [`pku-minic/oj-docker`](https://github.com/pku-minic/oj-docker) 仓库中获取到评测机环境的 Docker 镜像.
+你可以在 GitHub 上的 [pku-minic/oj-docker](https://github.com/pku-minic/oj-docker) 仓库中获取到评测机环境的 Docker 镜像.
 
 使用方法及其他详情请参考该仓库的 [README](https://github.com/pku-minic/oj-docker/blob/master/README.md).
