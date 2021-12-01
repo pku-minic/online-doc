@@ -1,6 +1,6 @@
 # 5.1. 提交代码
 
-你需要使用我们提供的代码托管平台 ([eduxiji.gitlab.net](https://gitlab.eduxiji.net)) 来托管你实现的编译器的源代码.
+你可以使用我们提供的代码托管平台 ([eduxiji.gitlab.net](https://gitlab.eduxiji.net)) 或者第三方代码托管平台来托管你实现的编译器的源代码.
 
 ## 选择提交方式
 
