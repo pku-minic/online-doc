@@ -1,23 +1,33 @@
-* [1. 前言](/)
-* [2. 一个简单的例子](step-by-step/)
-  * [2.1. 开始](step-by-step/beginning.md)
-  * [2.2. 词法分析器](step-by-step/lexer.md)
-  * [2.3. 语法分析器](step-by-step/parser.md)
-  * [2.4. 解释执行](step-by-step/interpreter.md)
-  * [2.5. 生成 IR](step-by-step/ir-gen.md)
-  * [2.6. 寄存器分配](step-by-step/regalloc.md)
-  * [2.7. 生成 RISC-V 汇编](step-by-step/riscv.md)
-* [3. SysY 语言](sysy/)
-  * [3.1. 文法定义](sysy/ebnf.md)
-  * [3.2. 语义约束](sysy/semantic.md)
-  * [3.3. 运行时库](sysy/runtime.md)
-* [4. IR 定义](ir/)
-  * [4.1. Eeyore](ir/eeyore.md)
-  * [4.2. Tigger](ir/tigger.md)
-  * [4.3. 使用 MiniVM 调试](ir/minivm.md)
-  * [4.4. 将 Tigger 转换为 RISC-V 汇编](ir/riscv.md)
-* [5. 在线评测系统](oj/)
-  * [5.1. 提交代码](oj/committing.md)
-  * [5.2. 开始评测](oj/judging.md)
-  * [5.3. 本地测试](oj/testing.md)
-* [6. 常见问题](faq/)
+* [写在前面](/)
+  <!-- 实验说明, 如何使用搜索引擎, 前置知识 (Linux/Git 等), 问答墙, 提问的艺术 -->
+  <!-- https://nju-projectn.github.io/ics-pa-gitbook/ics2021/1.1.html -->
+* [Lv0. 环境配置](/)
+  <!-- 安装 Docker, 配置镜像, 熟悉框架的使用, Koopa 在线, RISC-V ISA 介绍 -->
+  <!-- CISC vs. RISC -->
+* [Lv1. `main` 函数](/)
+  <!-- flex/bison 初见, 解析 main 函数, IR 生成, 测试 -->
+* [Lv2. 表达式](/)
+  <!-- unary, binary (逻辑与或的非短路实现), IR 生成, 测试 -->
+* [Lv3. 变量和常量](/)
+  <!-- 变量定义/读写, 常量定义/编译期求值, IR 生成, 测试 -->
+* [Lv4. 语句块和作用域](/)
+  <!-- 语句块/语句块中的语句/空语句, 作用域中的定义和使用, IR 生成, 测试 -->
+* [Lv5. `if` 语句](/)
+  <!-- if/else 语句, 逻辑短路, IR 生成, 测试 -->
+* [Lv6. `while` 语句](/)
+  <!-- while 语句, break/continue, IR 生成, 测试 -->
+* [Lv7. 函数和全局变量](/)
+  <!-- 函数定义/调用, 库函数, 全局变量/常量, IR 生成, 测试 -->
+  <!-- 关于图灵完备性的思考 -->
+* [Lv8. 数组](/)
+  <!-- 一维数组, 多维数组/初始化表达式, IR 生成, 测试 -->
+* [Lv9. 目标代码生成](/)
+  <!-- 熟悉 RISC-V 汇编, 目标代码生成, 测试 -->
+* [Lv9+. 更优化的编译器](/)
+  <!-- 寄存器分配, 优化, SSA 形式/更多优化, 性能测试 -->
+* [Lv9++. 新的开始](/)
+  <!-- 一些和编译相关但更具发散性的课题 -->
+* [杂项/附录/参考](/)
+  <!-- 为什么学编译 -->
+  <!-- SysY (更新版本) 的语法定义, Koopa IR 定义, RISC-V 指令速查 -->
+  <!-- 参考文献, 示例编译器 -->
