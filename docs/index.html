@@ -21,7 +21,10 @@
       subMaxLevel: 3,
       search: 'auto',
       loadFooter: 'footer.md',
-      auto2top: true
+      auto2top: true,
+      customPageTitle: {
+        suffix: '北大编译实践在线文档'
+      }
     }
   </script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
@@ -32,6 +35,7 @@
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/gitalk.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/@alertbox/docsify-footer/dist/docsify-footer.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@sujaykumarh/docsify-plugin-title@1.x/dist/plugin.min.js"></script>
   <script>
     const gitalk = new Gitalk({
       clientID: '37025e12cf1bb49f657a',
