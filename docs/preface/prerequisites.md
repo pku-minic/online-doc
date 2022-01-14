@@ -92,6 +92,10 @@ Git 是一个版本控制系统 (version control system, VCS). 什么是版本�
 * [GDB cheat sheet](https://darkdust.net/files/GDB%20Cheat%20Sheet.pdf).
 * [LLDB cheat sheet](https://darkdust.net/files/GDB%20Cheat%20Sheet.pdf).
 
+## 如何编写简单的 Makefile
+
+?> **TODO:** 待补充
+
 ## 为什么要设置这一节
 
 据 MaxXing 观察, 有些同学确实完全不了解某些工具的基础使用方法. 甚至在往年的课程实践中出现过这些情况:
