@@ -52,7 +52,7 @@ Git 是一个版本控制系统 (version control system, VCS). 什么是版本�
 * **推送本地提交到远程:** `git push`.
 * **查看所有提交记录:** `git log`, 你可以从中看到某个提交的哈希值.
 * **把仓库复位到某个提交的状态:** `git reset 提交的哈希值`.
-* **从当前提交新建分支:** `git checkout -b 分支名`.
+* **从当前提交新建分支并切换:** `git checkout -b 分支名`.
 * **切换到分支:** `git checkout 分支名`.
 * **删除分支:** `git branch -D 分支名`.
 
@@ -87,6 +87,10 @@ Git 是一个版本控制系统 (version control system, VCS). 什么是版本�
 * **暂停执行:** `Ctrl + C`.
 * **退出:** `q` 或 `Ctrl + D`.
 
+一个例子:
+
+你写的编译器出现了段错误——这种问题使用 `print` 大法调试效率很低, 因为你很难知道你的编译器到底在何处出现了段错误, 进而无法得知应该在何处插入 `print`. 遇到这种情况, 不妨使用调试器载入程序并运行, 当程序出现段错误时, 调试器会停住并进入命令行供你操作. 此时你就可以使用 `bt` 查看调用栈, 定位出错的位置, 然后在合适的地方下断点, 并重新运行程序来进一步调试了.
+
 推荐:
 
 * [GDB cheat sheet](https://darkdust.net/files/GDB%20Cheat%20Sheet.pdf).
@@ -94,7 +98,130 @@ Git 是一个版本控制系统 (version control system, VCS). 什么是版本�
 
 ## 如何编写简单的 Makefile
 
-?> **TODO:** 待补充
+你可能很熟悉如何使用 IDE 来开发简单的 C/C++ 程序: 新建工程, 写代码, 按下运行按钮, BOOM, 程序就跑了起来 ~~(当然也可能跑不起来)~~. 但当使用命令行环境时, 你可能就完全不懂该如何编译/运行你写的 C/C++ 程序了.
+
+当然, 聪明的你可能知道如何使用 `gcc`/`g++`:
+
+```
+gcc hello.c -o hello
+```
+
+太好了, 我们可以直接通过调用编译器来编译我们的代码, 然后再直接运行生成的程序即可. 手敲命令行, 完全可以满足需求, 每次也不会很麻烦, 听起来还很酷.
+
+然而在编译实践课中, 你写的程序通常不会由简单的一个 C/C++ 源文件构成. 甚至里面还可能包括非 C/C++ 的文件, 例如 `.l`/`.y` 文件. 这个时候, 你就无法用一条命令来编译你的编译器了:
+
+```
+flex -o lexer.c lexer.l
+bison -d -o parser.c parser.y
+gcc lexer.c parser.c ast.c ... -o compiler
+```
+
+想象一下, 如果你每次都手敲上面的一大堆命令, 才能得到一个自己的编译器的话, 那烦都得烦死了. 当然, 更聪明的你会想到写一个 Shell 脚本:
+
+```bash
+#!/bin/bash
+
+flex -o lexer.c lexer.l
+bison -d -o parser.c parser.y
+gcc lexer.c parser.c ast.c ... -o compiler
+```
+
+这么做当然可以解决问题, 但也带来了别的问题: 你每次都必须重新编译所有的 C/C++ 源文件. 你可能觉得: 这也算问题? 如果你开发的的编译器代码量不是特别小, 你就会明显感觉到相比编译那些只有单个源文件的程序, 编译你的整个编译器的时间会更长. 而如果你写的程序的规模进一步增大 (比如你写了一个操作系统或者浏览器内核), 进行一次完整编译的时间也会大大增长.
+
+有没有一种办法缩短编译的时间呢? 其实是有的. 大家都知道, C/C++ 源文件会经过编译, 链接的步骤才能变成可执行文件, 所以 `gcc` 在编译你的编译器的时候实际上执行了如下操作:
+
+```
+gcc lexer.c -c -o lexer.o
+gcc parser.c -c -o parser.o
+gcc ast.c -c -o ast.o
+...
+gcc lexer.o parser.o ast.o ... -o compiler
+```
+
+最后一步是链接, 此前所有的步骤都是编译. 我们不难发现, 在我们之前已经进行过一次编译/链接的情况下, 如果一个 `.c` 文件 (及其 `include` 的头文件) 的内容没有发生变化, 我们就没必要再把它编译成 `.o` 文件——反正之前已经编译过了, 再编译一次结果也不会变的. 如果我们不再重复编译没发生变化的源文件, 那编译的时间就可以大大减少了.
+
+更进一步, 我们可以写一个脚本, 检查自己编译器的源文件是否发生过变化. 如果没有, 就不重新编译这个文件. 实际上, 这就是 `Makefile` 的作用. 我们可以把之前的那个 Shell 脚本写成 `Makefile` 的形式:
+
+!> 注意 Docsify 渲染代码块的时候会把里面的 tab 缩进[全部替换成空格](https://github.com/markedjs/marked/issues/1668), 但 `Makefile` 里只能使用 tab 缩进, 所以不要直接在网页上复制下面的代码.
+
+```makefile
+compiler: lexer.o parser.o ast.o
+	gcc lexer.o parser.o ast.o -o compiler
+
+lexer.o: lexer.c
+	gcc lexer.c -c -o lexer.o
+
+parser.o: parser.c
+	gcc parser.c -c -o parser.o
+
+ast.o: ast.c
+	gcc ast.c -c -o ast.o
+
+lexer.c: lexer.l
+	flex -o lexer.c lexer.l
+
+parser.c: parser.y
+	bison -d -o parser.c parser.y
+```
+
+在命令行中执行:
+
+```
+make compiler
+```
+
+然后, `make` 就会根据 `Makefile` 的内容, 自动帮我们生成 `compiler` 这个文件.
+
+`Makefile` 的基本语法其实很简单. 你可以注意到上面的例子中出现了很多 `file1: file2 file3 ...` 的写法, 它的含义是: 要生成 `file1`, 必须确保 `file2`, `file3`, ... 是存在的, 如果他们不存在, 就去生成相应的文件. 在这行之后带有缩进的内容描述了应该如何生成冒号之前的那个文件.
+
+所以, 例子中的 `Makefile` 描述了这样的事情: 要想生成 `compiler`, 就必须保证 `lexer.o`, `parser.o` 和 `ast.o` 是存在的. 如果这些文件存在, 就使用 `gcc lexer.o parser.o ast.o -o compiler` 这条命令来生成 `compiler` 这个文件; 如果这些文件不存在, 就尝试用文件里写明的其他规则生成这些文件. 之后的规则与之类似, 不再赘述.
+
+当然, 我们其实可以直接在命令行执行:
+
+```
+make
+```
+
+这和 `make compiler` 是等价的, 因为在不指定 `make` 什么文件的时候, `make` 会查找 `Makefile` 里出现的第一个规则, 然后去生成这个规则对应的文件.
+
+`make` 不仅会检查文件是否存在, 还会检查文件是否是最新的. 在 `compiler: lexer.o parser.o ast.o` 规则中, 如果 `lexer.o`, `parser.o` 和 `ast.o` 都存在, 但其中某个文件 “不是最新的”, 那 `Makefile` 也会重新生成这些文件, 再用更新后的文件生成 `compiler`.
+
+`make` 如何判断文件是最新的呢? 假设我们已经执行过一次 `make`, 然后修改了 `lexer.l`, 再执行一次 `make`. `make` 会做以下操作:
+
+* 检查 `compiler` 是否需要更新, 如果一个文件不存在, 或者它依赖的其他文件中, 有文件不存在或需要更新, 这个文件就需要更新.
+  * `compiler` 存在, 依赖 `lexer.o`, `parser.o` 和 `ast.o`, 检查这三个文件是否需要更新.
+    * `lexer.o` 存在, 依赖 `lexer.c`, 检查这个文件是否需要更新.
+      * `lexer.c` 存在, 依赖 `lexer.l`, 检查这个文件是否需要更新.
+        * `lexer.l` 存在, 被修改过. 这个文件没有对应的更新规则, 所以 `make` 不会去管它. 你可以理解为 `make` 认为这个文件已经被用户更新了.
+      * `lexer.c` 需要更新, 执行 `flex -o lexer.c lexer.l` 来更新文件.
+    * `lexer.o` 需要更新, 执行 `gcc lexer.c -c -o lexer.o` 来更新文件.
+    * 检查 `parser.o` 和 `ast.o` 是否需要更新. 它们都不需要更新.
+  * `compiler` 需要更新, 执行 `gcc lexer.o parser.o ast.o -o compiler` 来更新文件.
+* 所有需要更新的文件都被更新过了, `make` 的任务完成了, 退出.
+
+`make` 通过上述方式, 实现了 “只重新编译我们修改过的文件” 的功能, 节省了编译的时间.
+
+当然, 你可能会觉得我们给出的这个示例 `Makefile` 写的太啰嗦了. 比如, 所有的 `.o` 文件其实都依赖于对应文件名的 `.c` 文件, 而且他们的构建方式也完全相同, 那我们为什么要把类似的规则重复写三遍呢? `make` 提供了一些语法来帮助我们简化 `Makefile` 的写法:
+
+```makefile
+compiler: lexer.o parser.o ast.o
+	gcc $^ -o $@
+
+%.o: %.c
+	gcc $^ -c -o $@
+
+lexer.c: lexer.l
+	flex -o $@ $^
+
+parser.c: parser.y
+	bison -d -o $@ $^
+```
+
+至于上面这些语法都是什么含义, 此处就不再赘述了, 你可以自行查看 `make` 手册中的相关部分 ([Pattern Rules](https://www.gnu.org/software/make/manual/make.html#Pattern-Rules) 和 [Automatic Variables](https://www.gnu.org/software/make/manual/make.html#Automatic-Variables)).
+
+推荐:
+
+* [GNU make](https://www.gnu.org/software/make/manual/make.html).
 
 ## 为什么要设置这一节
 
