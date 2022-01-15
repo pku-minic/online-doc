@@ -1,15 +1,23 @@
+/* Theme */
+:root {
+  --theme-hue: 204;
+  --theme-saturation: 85%;
+  --theme-lightness: 50%;
+}
+
 /* Sidebar */
 :root {
   --sidebar-nav-indent: 0.7em;
   --sidebar-nav-pagelink-padding: 0.6em 0 0.6em 20px;
+  --sidebar-name-font-weight: normal;
 }
 
-/* Sidebar Again */
+/* Sidebar again */
 .sidebar-nav {
   font-size: 0.9em;
 }
 
-/* Code Block */
+/* Code block */
 :root {
   --code-font-size: calc(var(--font-size-m) * 0.9)
 }
