@@ -4,7 +4,8 @@
 
 附录部分包括:
 
-* [SysY 语言规范](/misc-app-ref/sysy).
+* [SysY 语言规范](/misc-app-ref/sysy-spec).
+* [SysY 运行时库](/misc-app-ref/sysy-runtime).
 * [Koopa IR 规范](/misc-app-ref/koopa).
 * [RISC-V 指令速查](/misc-app-ref/riscv-insts).
 * [在线评测使用说明](/misc-app-ref/oj).
