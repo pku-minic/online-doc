@@ -104,7 +104,7 @@ docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
 
 ```
 ./compiler -koopa hello.c -o hello.koopa
-koopac hello.koopa | lli
+koopac hello.koopa | lli --extra-archive=$CDE_LIBRARY_PATH/native/libsysy.a
 ```
 
 使用你的编译器生成 RISC-V 汇编代码, 将其汇编为二进制, 并运行生成的二进制:
@@ -112,6 +112,6 @@ koopac hello.koopa | lli
 ```
 ./compiler -riscv hello.c -o hello.S
 clang hello.S -c -o hello.o -target riscv32-unknown-linux-elf -march=rv32im -mabi=ilp32
-ld.lld hello.o -L$CDE_LIBRARY_PATH -lsysy -o hello
+ld.lld hello.o -L$CDE_LIBRARY_PATH/riscv32 -lsysy -o hello
 qemu-riscv32-static hello
 ```
