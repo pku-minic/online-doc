@@ -31,7 +31,15 @@ docker
 
 ## 获取编译实践的镜像
 
-?> **TODO:** 待补充.
+在系统的命令行中执行:
+
+```
+docker pull maxxing/compiler-dev
+```
+
+如果你使用的是 Linux 系统, 则上述命令可能需要 `sudo` 才可正常执行.
+
+编译实践的镜像较大, 但拉取镜像的速度可能并不快. 为了加快从 Docker Hub 拉取镜像的速度, 你可以自行 STFW, 为你系统中的 Docker 配置 Docker Hub Mirror.
 
 ## Docker 的基本用法
 
