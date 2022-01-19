@@ -1,6 +1,8 @@
 # Lv0.2. Koopa IR 简介
 
-?> 本节将带你大致了解什么是 Koopa IR, 后续章节中将结合实践内容, 详细介绍 Koopa IR 对应部分的特性. 关于 Koopa IR 的具体定义, 请参考 [Koopa IR 规范](/misc-app-ref/koopa).
+?> 本节将带你大致了解什么是 Koopa IR, 后续章节中将结合实践内容, 详细介绍 Koopa IR 对应部分的特性.
+<br><br>
+关于 Koopa IR 的具体定义, 请参考 [Koopa IR 规范](/misc-app-ref/koopa).
 
 ## 什么是 Koopa IR
 
