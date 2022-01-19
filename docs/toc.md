@@ -7,7 +7,7 @@
   * [Lv0.2. Koopa IR 简介](/lv0-env-config/koopa)
   * [Lv0.3. RISC-V 简介](/lv0-env-config/riscv)
 * [Lv1. `main` 函数](/lv1-main/)
-  * [Lv1.1. Flex/Bison 初见](/lv1-main/flex-bison)
+  * [Lv1.1. 词法/语法分析初见](/lv1-main/lexer-parser)
   * [Lv1.2. 解析 `main` 函数](/lv1-main/parsing-main)
   * [Lv1.3. IR 生成](/lv1-main/ir-gen)
   * [Lv1.4. 测试](/lv1-main/testing)
