@@ -80,7 +80,7 @@ autotest -koopa /root/compiler
 
 自动测试脚本还支持一些其他的选项, 例如指定使用何种测试用例来测试编译器, 详见自动测试脚本的 [README](https://github.com/pku-minic/compiler-dev/blob/master/autotest/README.md), 或者 `autotest --help` 命令的输出.
 
-此外, 如果只是测试自己的编译器, 你并不需要进入容器的命令行, 你可以在宿主机执行:
+此外, 如果只是测试自己的编译器, 你并不需要进入容器的命令行, 你可以直接在宿主机执行:
 
 ```
 docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
@@ -89,4 +89,29 @@ docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
 
 ## 实验环境中的工具
 
-?> **TODO:** 待补充
+实验环境中已经配置了如下工具:
+
+* **必要的工具:** `git`, `flex`, `bison`, `python3`.
+* **构建工具:** `make`, `cmake`.
+* **运行工具:** `qemu-user-static`.
+* **编译工具链:** Rust 工具链, LLVM 工具链.
+* **Koopa IR 相关工具:** `libkoopa` (Koopa 的 C/C++ 库), `koopac` (Koopa IR 到 LLVM IR 转换器).
+* **测试脚本:** `autotest`.
+
+举例:
+
+使用你的编译器生成 Koopa IR, 并运行生成的 Koopa IR:
+
+```
+./compiler -koopa hello.c -o hello.koopa
+koopac hello.koopa | lli
+```
+
+使用你的编译器生成 RISC-V 汇编代码, 将其汇编为二进制, 并运行生成的二进制:
+
+```
+./compiler -riscv hello.c -o hello.S
+clang hello.S -c -o hello.o -target riscv32-unknown-linux-elf -march=rv32im -mabi=ilp32
+ld.lld hello.o -L$CDE_LIBRARY_PATH -lsysy -o hello
+qemu-riscv32-static hello
+```
