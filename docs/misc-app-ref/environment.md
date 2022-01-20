@@ -36,9 +36,16 @@ docker run -it --rm -v 项目目录:/root/compiler \
 
 你可以使用 C/C++/Rust 来实现你的编译器, 同时为了方便测试程序在测试时编译你的编译器项目, 项目的根目录中必须存在下列三种文件之一:
 
-* **`Makefile` 或 `makefile` 文件:** 测试程序将使用 `make BUILD_DIR="build目录的路径" -C "项目路径"` 命令编译项目. 你的 `Makefile` 必须依据 `BUILD_DIR` 参数的值, 将生成的可执行文件输出到该路径中, 并命名为 `compiler`.
-* **`CMakeLists.txt` 文件:** 测试程序将使用 `cmake -S "项目路径" -B "build目录的路径" && cmake --build "build目录的路径"` 命令编译项目. 你的 `CMakeLists.txt` 必须将可执行文件直接输出到所指定的 `build` 目录的根目录, 且将其命名为 `compiler`.
-* **`Cargo.toml` 文件:** 测试程序将使用 `cargo build --manifest-path "Cargo.toml的路径" --release` 命令编译项目. 你无需担心任何其他内容.
+* **`Makefile` 或 `makefile` 文件:**
+  * 编译命令行: `make BUILD_DIR="build目录" LIB_DIR="libkoopa目录" -C "项目目录"`.
+  * 要求: 你的 `Makefile` 必须依据 `BUILD_DIR` 参数的值, 将生成的可执行文件输出到该目录中, 并命名为 `compiler`. 如果你的编译器依赖 `libkoopa`, 你可以在链接时使用 `LIB_DIR` 参数获取 `libkoopa` 所在的目录.
+* **`CMakeLists.txt` 文件:**
+  * 生成编译脚本: `cmake -S "项目目录" -B "build目录" -DLIB_DIR="libkoopa目录"`.
+  * 编译命令行: `cmake --build "build目录"`.
+  * 要求: 你的 `CMakeLists.txt` 必须将可执行文件直接输出到所指定的 `build` 目录的根目录, 且将其命名为 `compiler`. 如果你的编译器依赖 `libkoopa`, 你可以在链接时使用 `LIB_DIR` 参数获取 `libkoopa` 所在的目录.
+* **`Cargo.toml` 文件:**
+  * 编译命令行: `cargo build --manifest-path "Cargo.toml的路径" --release`.
+  * 要求: 你无需担心任何其他内容.
 
 ### 输入形式
 
