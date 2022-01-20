@@ -56,7 +56,7 @@ RelExp        ::= AddExp | RelExp ("<" | ">" | "<=" | ">=") AddExp;
 EqExp         ::= RelExp | EqExp ("==" | "!=") RelExp;
 LAndExp       ::= EqExp | LAndExp "&&" EqExp;
 LOrExp        ::= LAndExp | LOrExp "||" LAndExp;
-ConstExp      ::= AddExp;
+ConstExp      ::= Exp;
 ```
 
 其中, 各符号的含义如下:
@@ -92,9 +92,9 @@ ConstExp      ::= AddExp;
 SysY 语言中标识符 `IDENT` (identifier) 的规范如下:
 
 ```ebnf
-identifier  ::= identifier-nondigit
-              | identifier identifier-nondigit
-              | identifier digit;
+identifier ::= identifier-nondigit
+             | identifier identifier-nondigit
+             | identifier digit;
 ```
 
 其中, `identifier-nondigit` 为下划线, 小写英文字母或大写英文字母; `digit` 为数字 0 到 9.
@@ -144,8 +144,8 @@ SysY 语言中注释的规范与 C 语言一致, 如下:
 ### 编译单元
 
 ```ebnf
-CompUnit  ::= [CompUnit] (Decl | FuncDef);
-Decl      ::= ConstDecl | VarDecl;
+CompUnit ::= [CompUnit] (Decl | FuncDef);
+Decl ::= ConstDecl | VarDecl;
 ```
 
 1. 一个 SysY 程序由单个文件组成, 文件内容对应 EBNF 表示中的 `CompUnit`. 在该 `CompUnit` 中, 必须存在且仅存在一个标识为 `main`, 无参数, 返回类型为 `int` 的 `FuncDef` (函数定义). `main` 函数是程序的入口点.
@@ -155,7 +155,7 @@ Decl      ::= ConstDecl | VarDecl;
 ### 常量定义
 
 ```ebnf
-ConstDef  ::= IDENT {"[" ConstExp "]"} "=" ConstInitVal;
+ConstDef ::= IDENT {"[" ConstExp "]"} "=" ConstInitVal;
 ```
 
 1. `ConstDef` 用于定义符号常量. `ConstDef` 中的 `IDENT` 为常量的标识符, 在 `IDENT` 后, `=` 之前是可选的数组维度和各维长度的定义部分, 在 `=` 之后是初始值.
@@ -184,8 +184,8 @@ SysY 中的常量有些类似于 C++ 中的 `consteval`, 或 Rust 中的 `const`
 ### 变量定义
 
 ```ebnf
-VarDef  ::= IDENT {"[" ConstExp "]"}
-          | IDENT {"[" ConstExp "]"} "=" InitVal;
+VarDef ::= IDENT {"[" ConstExp "]"}
+         | IDENT {"[" ConstExp "]"} "=" InitVal;
 ```
 
 1. `VarDef` 用于定义变量. 当不含有 `=` 和初始值时, 其运行时实际初值未定义.
@@ -205,8 +205,8 @@ int e[4][2] = {{d[2][1], c[2][1]}, {3, 4}, {5, 6}, {7, 8}};
 ### 初值
 
 ```ebnf
-ConstInitVal  ::= ConstExp | "{" [ConstInitVal {"," ConstInitVal}] "}";
-InitVal       ::= Exp | "{" [InitVal {"," InitVal}] "}";
+ConstInitVal ::= ConstExp | "{" [ConstInitVal {"," ConstInitVal}] "}";
+InitVal ::= Exp | "{" [InitVal {"," InitVal}] "}";
 ```
 
 1. 全局变量声明中指定的初值表达式必须是常量表达式.
@@ -222,7 +222,7 @@ a = {1,2,3}
 ### 函数形参与实参
 
 ```ebnf
-FuncFParam  ::= BType IDENT ["[" "]" {"[" ConstExp "]"}];
+FuncFParam ::= BType IDENT ["[" "]" {"[" ConstExp "]"}];
 FuncRParams ::= Exp {"," Exp};
 ```
 
@@ -245,7 +245,7 @@ FuncDef ::= FuncType IDENT "(" [FuncFParams] ")" Block;
 ### 语句块
 
 ```ebnf
-Block     ::= "{" {BlockItem} "}";
+Block ::= "{" {BlockItem} "}";
 BlockItem ::= Decl | Stmt;
 ```
 
@@ -255,14 +255,14 @@ BlockItem ::= Decl | Stmt;
 ### 语句
 
 ```ebnf
-Stmt  ::= LVal "=" Exp ";"
-        | [Exp] ";"
-        | Block
-        | "if" "(" Exp ")" Stmt ["else" Stmt]
-        | "while" "(" Exp ")" Stmt
-        | "break" ";"
-        | "continue" ";"
-        | "return" [Exp] ";";
+Stmt ::= LVal "=" Exp ";"
+       | [Exp] ";"
+       | Block
+       | "if" "(" Exp ")" Stmt ["else" Stmt]
+       | "while" "(" Exp ")" Stmt
+       | "break" ";"
+       | "continue" ";"
+       | "return" [Exp] ";";
 ```
 
 1. `Stmt` 中的 `if` 型语句遵循就近匹配的原则.
@@ -271,7 +271,7 @@ Stmt  ::= LVal "=" Exp ";"
 ### 左值表达式
 
 ```ebnf
-LVal  ::= IDENT {"[" Exp "]"};
+LVal ::= IDENT {"[" Exp "]"};
 ```
 
 1. `LVal` 表示具有左值的表达式, 可以为变量或者某个数组元素.
@@ -281,7 +281,7 @@ LVal  ::= IDENT {"[" Exp "]"};
 ### 表达式
 
 ```ebnf
-Exp   ::= LOrExp;
+Exp ::= LOrExp;
 ```
 
 1. `Exp` 在 SysY 中代表 `int` 型表达式. 当 `Exp` 出现在表示条件判断的位置时 (例如 `if` 和 `while`), 表达式值为 0 时为假, 非 0 时为真.
