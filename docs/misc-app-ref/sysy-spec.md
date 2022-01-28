@@ -126,6 +126,8 @@ hexadecimal-prefix  ::= "0x" | "0X";
 
 其中, `nonzero-digit` 为数字 1 到 9; `octal-digit` 为数字 0 到 7; `hexadecimal-digit` 为数字 0 到 9, 或大写/小写字母 a 到 f.
 
+数值常量的范围为 $[0, 2^{31} - 1]$, 不包含负号.
+
 关于其他信息, 请参考 [ISO/IEC 9899](http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf) 第 54 页关于整数型常量的定义, 在此基础上忽略所有后缀.
 
 ### 注释
