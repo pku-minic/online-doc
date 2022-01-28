@@ -6,6 +6,7 @@
   * [Lv0.1. 配置 Docker](/lv0-env-config/docker)
   * [Lv0.2. Koopa IR 简介](/lv0-env-config/koopa)
   * [Lv0.3. RISC-V 简介](/lv0-env-config/riscv)
+  * [Lv0.4. 选择你的编程语言](/lv0-env-config/language)
 * [Lv1. `main` 函数](/lv1-main/)
   * [Lv1.1. 词法/语法分析初见](/lv1-main/lexer-parser)
   * [Lv1.2. 解析 `main` 函数](/lv1-main/parsing-main)
