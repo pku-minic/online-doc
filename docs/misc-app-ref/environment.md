@@ -94,6 +94,24 @@ docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
   autotest 阶段 /root/compiler
 ```
 
+MaxXing 在开发这套环境时, 常用的测试方法为:
+
+```shell
+# 先进入 Docker 容器
+docker run -it --rm -v 项目目录:/root/compiler compiler-dev bash
+# 在容器中运行 autotest, 但指定工作目录 (-w 选项)
+# 同时, 使用 tee 命令将输出保存到文件
+autotest -w wd compiler 2>&1 | tee compiler/out.txt
+# 测试完毕后, 不要退出容器, 回到宿主机修复 bug
+# 因为编译器目录已经被挂到了容器里, 所以你能在宿主机看到刚刚生成的 out.txt
+# 同时你在宿主机对代码做出的更改也能反映到容器内
+# ...
+# 修改完成后, 回到容器运行同样的 autotest 命令
+# 因为我们指定了工作目录, autotest 会在上次编译的基础上增量编译你的编译器
+# 这样能节省很多时间
+autotest -w wd compiler 2>&1 | tee compiler/out.txt
+```
+
 ## 实验环境中的工具
 
 实验环境中已经配置了如下工具:
