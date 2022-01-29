@@ -12,7 +12,7 @@
 * **CMake 模板:** 参考 [`sysy-cmake-template`](https://github.com/pku-minic/sysy-cmake-template), 使用 C/C++ 开发编译器的同学可以参考.
 * **Cargo 模板:** 你并不需要任何模板, 你只需要在安装好 Rust 工具链的情况下, 执行 `cargo new 项目名称`, 然后当前目录下就会多出一个名为 `项目名称` 的目录, 在这个目录中开发即可. 当然, 为了和 Make/CMake 模板呼应, 我们还是新建了一个叫做 [`sysy-cargo-template`](https://github.com/pku-minic/sysy-cargo-template) 的项目.
 
-请务必仔细阅读模板中的 `README`.
+请务必仔细阅读模板中的 `README`. 如果你使用 Make/CMake 模板, 你应该根据你选择的语言 (C/C++), 更新 `Makefile`/`CMakeLists.txt` 中 `CPP_MODE` 参数的值.
 
 ## 建议的开发方式
 
