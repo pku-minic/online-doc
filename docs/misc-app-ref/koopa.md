@@ -97,7 +97,7 @@ GlobalMemoryDeclaration ::= "alloc" Type "," Initializer;
 
 这点和 C/C++ 的逻辑类似, 对应到 C 语言表示的伪代码则为:
 
-```clike
+```c
 int *a = (int *)malloc(sizeof(int));
 ```
 

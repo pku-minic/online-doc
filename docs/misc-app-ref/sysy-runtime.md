@@ -32,7 +32,7 @@ SysY 运行时库提供一系列 I/O 函数, 支持对整数, 字符以及一串
 
 **示例**:
 
-```clike
+```c
 int n;
 n = getint();
 ```
@@ -45,7 +45,7 @@ n = getint();
 
 **示例**:
 
-```clike
+```c
 int n;
 n = getch();
 ```
@@ -60,7 +60,7 @@ n = getch();
 
 **示例**:
 
-```clike
+```c
 int a[10][10];
 int n;
 n = getarray(a[0]);
@@ -74,7 +74,7 @@ n = getarray(a[0]);
 
 **示例**:
 
-```clike
+```c
 int n = 10;
 putint(n);
 putint(10);
@@ -93,7 +93,7 @@ putint(n);
 
 **示例**:
 
-```clike
+```c
 int n = 10;
 putch(n);
 ```
@@ -110,7 +110,7 @@ putch(n);
 
 **示例**:
 
-```clike
+```c
 int n = 2;
 int a[2] = {2, 3};
 putarray(n, a);
@@ -128,7 +128,7 @@ SysY 运行时库提供 `starttime` 和 `stoptime` “函数”, 用于测量 Sy
 
 2. `starttime`, `stoptime` 不支持嵌套调用的形式, 即不支持:
 
-    ```clike
+    ```c
     starttime();
     ...
     starttime();
@@ -158,7 +158,7 @@ SysY 运行时库提供 `starttime` 和 `stoptime` “函数”, 用于测量 Sy
 
 **示例**:
 
-```clike
+```c
 void foo(int n) {
   starttime();
   int i = 0;
