@@ -6,7 +6,7 @@
 
 通常情况下, SysY 程序看起来和 C 程序类似:
 
-```clike
+```c
 int fib(int n) {
   if (n <= 2) {
     return 1;

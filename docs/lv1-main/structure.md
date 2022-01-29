@@ -28,7 +28,7 @@ gcc hello.c -o hello
 
 对于这样一段保存在文件里的源程序:
 
-```clike
+```c
 int main() {
   // 我是注释诶嘿嘿
   return 0;
@@ -57,7 +57,7 @@ Lexer 生成的 token 会包含一些信息, 用来让 parser 区分 token 的�
 
 上述程序经分析后, 可能能得到如下的 AST:
 
-```clike
+```c
 CompUnit {
   items: [
     FuncDef {
@@ -82,7 +82,7 @@ CompUnit {
 
 在语法分析的基础上, 编译器会对 AST 做进一步分析, 以期 “理解” 输入程序的语义, 为之后的 IR 生成做准备. 一个符合语法定义的程序未必符合语义定义, 例如对于如下的 SysY 程序:
 
-```clike
+```c
 int main() {
   int a = 1;
   int a = 2;
