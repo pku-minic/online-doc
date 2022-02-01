@@ -21,6 +21,19 @@ main:
   ret
 ```
 
+或:
+
+```
+  .text
+  .globl main
+main:
+  li t0, 0
+  mv a0, t0
+  ret
+```
+
+取决于你的实现方式.
+
 ## 相关规范
 
 见 [Lv1. `main` 函数](/lv1-main/).
