@@ -118,3 +118,5 @@ fun @main(): i32 {  // main 函数的定义
 !> 关于最后一种思路, 你可以参考 `libkoopa` 的[头文件](https://github.com/pku-minic/koopa/blob/master/crates/libkoopa/include/koopa.h), 其中定义了 raw program 的相关结构, 以及 Koopa IR 框架对 C/C++ 暴露的相关接口. 对熟悉 C/C++ 的同学来说, 这些内容应该不难理解.
 <br><br>
 由于文档作者 MaxXing 单枪匹马持续输出, 关于 `libkoopa` 提供的基础设施, 以及如何借助这些设施生成内存形式的 Koopa IR 程序的相关内容暂未补全. 希望他有时间可以写一下.
+
+?> 如果你基于 Make/CMake 模板, 使用 C/C++ 开发你的编译器, 那么你的编译器会和实验环境中的 `libkoopa` 库自动链接, 你无需进行任何修改.
