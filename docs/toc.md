@@ -14,7 +14,7 @@
   * [Lv1.4. IR 生成](/lv1-main/ir-gen)
   * [Lv1.5. 测试](/lv1-main/testing)
 * [Lv2. 初试目标代码生成](/lv2-code-gen/)
-  * [Lv2.1. 熟悉 RISC-V 汇编](/lv2-code-gen/riscv-asm)
+  * [Lv2.1. 处理 Koopa IR](/lv2-code-gen/processing-ir)
   * [Lv2.2. 目标代码生成](/lv2-code-gen/code-gen)
   * [Lv2.3. 测试](/lv2-code-gen/testing)
 * [Lv3. 表达式](/lv3-expr/)
