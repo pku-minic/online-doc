@@ -19,7 +19,7 @@ FuncDef     ::= FuncType IDENT "(" ")" Block;
 FuncType    ::= "int";
 
 Block       ::= "{" Stmt "}";
-Stmt        ::= "return" Expr ";";
+Stmt        ::= "return" Exp ";";
 
 Exp         ::= LOrExp;
 PrimaryExp  ::= "(" Exp ")" | Number;
