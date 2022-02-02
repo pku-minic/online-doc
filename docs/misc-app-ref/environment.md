@@ -140,3 +140,17 @@ clang hello.S -c -o hello.o -target riscv32-unknown-linux-elf -march=rv32im -mab
 ld.lld hello.o -L$CDE_LIBRARY_PATH/riscv32 -lsysy -o hello
 qemu-riscv32-static hello
 ```
+
+如果需要在实验环境中查看程序的返回值, 你可以在运行程序之后, 紧接着在命令行中执行:
+
+```
+echo $?
+```
+
+比如:
+
+```
+qemu-riscv32-static hello; echo $?
+```
+
+需要注意的是, 程序的 `main` 函数的返回值类型是 `int`, 即支持返回 32 位的返回值. 但你也许会发现, 你使用 `echo $?` 看到的返回值永远都位于 $[0, 255]$ 的区间内. 这是因为 Docker 实验环境内实际上运行的是 Linux 操作系统, Linux 程序退出时会使用 `exit` 系统调用传递返回值, 但接收返回值的一方可能会使用 `wait`, `waitpid` 等系统调用处理返回值, 此时只有返回值的低 8 位会被保留.
