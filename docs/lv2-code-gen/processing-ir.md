@@ -21,13 +21,13 @@
 
 首先你需要在代码中引用 `libkoopa` 的头文件:
 
-```cpp
+```c
 #include "koopa.h"
 ```
 
 然后, 假设你生成的 Koopa IR 程序保存在了字符串 (类型为 `const char *`) `str` 中, 你可以执行:
 
-```cpp
+```c
 // 解析字符串 str, 得到 Koopa IR 程序
 koopa_program_t program;
 koopa_error_code_t ret = koopa_parse_from_string(str, &program);
