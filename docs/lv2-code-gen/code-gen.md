@@ -109,7 +109,7 @@ void Visit(const koopa_raw_slice_t &slice) {
         // 访问基本块
         Visit(reinterpret_cast<koopa_raw_basic_block_t>(ptr));
         break;
-      case KOOPA_RSIK_BASIC_BLOCK:
+      case KOOPA_RSIK_VALUE:
         // 访问指令
         Visit(reinterpret_cast<koopa_raw_value_t>(ptr));
         break;
