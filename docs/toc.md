@@ -39,7 +39,7 @@
   * [Lv7.2. `break` 和 `continue`](/lv7-while/break-n-continue)
   * [Lv7.3. 测试](/lv7-while/testing)
 * [Lv8. 函数和全局变量](/lv8-func-n-global/)
-  * [Lv8.1. 函数定义和调用](/lv8-func-n-global/func-def-n-decl)
+  * [Lv8.1. 函数定义和调用](/lv8-func-n-global/func-def-n-call)
   * [Lv8.2. SysY 库函数](/lv8-func-n-global/lib-funcs)
   * [Lv8.3. 全局变量和常量](/lv8-func-n-global/globals)
   * [Lv8.4. 测试](/lv8-func-n-global/testing)
