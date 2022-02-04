@@ -2,15 +2,9 @@
 
 因为本章开头的语法规范里突然多出一大堆产生式, 所以你可能会觉得有些手足无措. 那我们不如把这对新加的内容在做一些拆分, 先来实现一元表达式的部分.
 
-本节涉及的语法规范如下:
+本节新增/变更的语法规范如下:
 
 ```ebnf
-CompUnit    ::= FuncDef;
-
-FuncDef     ::= FuncType IDENT "(" ")" Block;
-FuncType    ::= "int";
-
-Block       ::= "{" Stmt "}";
 Stmt        ::= "return" Exp ";";
 
 Exp         ::= UnaryExp;
