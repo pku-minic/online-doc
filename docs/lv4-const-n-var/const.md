@@ -1,44 +1,21 @@
 # Lv4.1. 常量
 
-本节涉及的语法规范如下:
+本节新增/变更的语法规范如下:
 
 ```ebnf
-CompUnit      ::= FuncDef;
-
-(* 新增部分 *)
 Decl          ::= ConstDecl;
 ConstDecl     ::= "const" BType ConstDef {"," ConstDef} ";";
 BType         ::= "int";
 ConstDef      ::= IDENT "=" ConstInitVal;
 ConstInitVal  ::= ConstExp;
-(* 新增部分结束 *)
 
-FuncDef       ::= FuncType IDENT "(" ")" Block;
-FuncType      ::= "int";
-
-(* 变更部分 *)
 Block         ::= "{" {BlockItem} "}";
 BlockItem     ::= Decl | Stmt;
-(* 变更部分结束 *)
-Stmt          ::= "return" Exp ";";
 
-Exp           ::= LOrExp;
-(* 变更部分 *)
 LVal          ::= IDENT;
 PrimaryExp    ::= "(" Exp ")" | LVal | Number;
-(* 变更部分结束 *)
-Number        ::= INT_CONST;
-UnaryExp      ::= PrimaryExp | UnaryOp UnaryExp;
-UnaryOp       ::= "+" | "-" | "!";
-MulExp        ::= UnaryExp | MulExp ("*" | "/" | "%") UnaryExp;
-AddExp        ::= MulExp | AddExp ("+" | "-") MulExp;
-RelExp        ::= AddExp | RelExp ("<" | ">" | "<=" | ">=") AddExp;
-EqExp         ::= RelExp | EqExp ("==" | "!=") RelExp;
-LAndExp       ::= EqExp | LAndExp "&&" EqExp;
-LOrExp        ::= LAndExp | LOrExp "||" LAndExp;
-(* 新增部分 *)
+
 ConstExp      ::= Exp;
-(* 新增部分结束 *)
 ```
 
 ## 一个例子
