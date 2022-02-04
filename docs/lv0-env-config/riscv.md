@@ -35,10 +35,10 @@ RISC-V 的指令系统由基础指令系统 (base instruction set) 和指令系�
   # `main` 函数, 程序的入口.
   .globl main
 main:
-  addi  sp, sp, -12
-  sw    ra, 8(sp)
-  sw    s0, 4(sp)
-  sw    s1, 0(sp)
+  addi  sp, sp, -16
+  sw    ra, 12(sp)
+  sw    s0, 8(sp)
+  sw    s1, 4(sp)
   la    s0, hello_str
   li    s1, 0
 1:
@@ -50,10 +50,10 @@ main:
   j     1b
 1:
   li    a0, 0
-  lw    s0, 4(sp)
-  lw    s1, 0(sp)
-  lw    ra, 8(sp)
-  addi  sp, sp, 12
+  lw    s1, 4(sp)
+  lw    s0, 8(sp)
+  lw    ra, 12(sp)
+  addi  sp, sp, 16
   ret
 
   # 数据段.
