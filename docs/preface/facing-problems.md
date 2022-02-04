@@ -30,8 +30,10 @@
 * 不放过任何一个问题, **包括编译代码时的警告**.
 * 遇到问题时对背后的原因多加思考, 找出它的深层原因.
 * 独立解决问题, 同时**不要怕尝试, 不要怕 debug**, 你会在这个过程中学到相当多的东西.
-* 遇到自己解决不了的问题: **STFW** (Search The Fucking Web), **RTFM** (Read The Fucking Manual). 搜索引擎和文档/手册里通常能找到绝大部分问题的答案.
+* 遇到自己解决不了的问题: **STFW** (Search The Fucking Web), **RTFM** (Read The Fucking Manual), **RTFSC** (Read The Fucking Source Code). 搜索引擎和文档/手册里通常能找到绝大部分问题的答案, 如果没有, 源码里一定会有.
 * 学会摆脱对百度的依赖, **在 Google/Bing 上用英文搜索问题**. 中文互联网什么样相信各位心中自有 B-tree.
+
+?> 如果你在解决问题的过程中实在坚持不下去了, [听听尼尔叔叔的鼓励](https://www.bilibili.com/video/BV1Fi4y1t7uG).
 
 ## 如何提问
 
