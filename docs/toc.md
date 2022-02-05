@@ -34,7 +34,7 @@
   * [Lv6.2. 短路求值](/lv6-if/short-circuit)
   * [Lv6.3. 测试](/lv6-if/testing)
 * [Lv7. `while` 语句](/lv7-while/)
-  * [Lv7.1. 处理 `while`](/lv7-while/parsing-while)
+  * [Lv7.1. 处理 `while`](/lv7-while/while)
   * [Lv7.2. `break` 和 `continue`](/lv7-while/break-n-continue)
   * [Lv7.3. 测试](/lv7-while/testing)
 * [Lv8. 函数和全局变量](/lv8-func-n-global/)
