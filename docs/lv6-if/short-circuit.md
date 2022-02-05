@@ -56,4 +56,4 @@ if (ptr != nullptr && check(ptr)) {
 
 ## 目标代码生成
 
-本节并未用到新的 Koopa IR 指令, 也不设计 Koopa IR 中的新概念, 所以这部分没有需要改动的内容.
+本节并未用到新的 Koopa IR 指令, 也不涉及 Koopa IR 中的新概念, 所以这部分没有需要改动的内容.
