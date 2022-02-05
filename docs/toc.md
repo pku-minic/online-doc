@@ -30,7 +30,7 @@
   * [Lv5.1. 实现](/lv5-block-n-scope/implementing)
   * [Lv5.2. 测试](/lv5-block-n-scope/testing)
 * [Lv6. `if` 语句](/lv6-if/)
-  * [Lv6.1. 处理 `if/else`](/lv6-if/parsing-if-else)
+  * [Lv6.1. 处理 `if/else`](/lv6-if/if-else)
   * [Lv6.2. 逻辑短路](/lv6-if/short-circuit)
   * [Lv6.3. 测试](/lv6-if/testing)
 * [Lv7. `while` 语句](/lv7-while/)
