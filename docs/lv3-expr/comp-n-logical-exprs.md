@@ -44,6 +44,10 @@ fun @main(): i32 {
 }
 ```
 
+!> **注意:** Koopa IR 只支持按位与或, 而不支持逻辑与或, 但你可以用其他运算拼凑出这些运算.
+<br><br>
+详见本节下一部分的描述.
+
 ## 目标代码生成
 
 关键部分的 RISC-V 汇编如下:
@@ -56,11 +60,11 @@ fun @main(): i32 {
   seqz  t1, t1
 ```
 
-如果你查阅 [RISC-V 规范](https://github.com/riscv/riscv-isa-manual/releases/download/Ratified-IMAFDQC/riscv-spec-20191213.pdf) 第 24 章 (Instruction Set Listings, 130 页), 你会发现 RISC-V 只支持小于指令 (`slt` 等). 而上述汇编中出现的 `sgt` 是一个伪指令, 也就是说, 这条指令并不真实存在, 而是用其他指令实现的.
+如果你查阅 [RISC-V 规范](https://github.com/riscv/riscv-isa-manual/releases/download/Ratified-IMAFDQC/riscv-spec-20191213.pdf)第 24 章 (Instruction Set Listings, 130 页), 你会发现 RISC-V 只支持小于指令 (`slt` 等). 而上述汇编中出现的 `sgt` 是一个伪指令, 也就是说, 这条指令并不真实存在, 而是用其他指令实现的.
 
 已知, `slt t0, t1, t2` 指令的含义是, 判断寄存器 `t1` 的值是否小于 `t2` 的值, 并将结果 (0 或 1) 写入 `t0` 寄存器. 思考:
 
-* `sgt t0, t1, t2` (判断大于) 是怎么实现的?
+* `sgt t0, t1, t2` (判断 `t1` 的值是否大于 `t2` 的值) 是怎么实现的?
 * 上述汇编中判断小于等于的原理是什么?
 * 如何使用 RISC-V 汇编判断大于等于?
 
