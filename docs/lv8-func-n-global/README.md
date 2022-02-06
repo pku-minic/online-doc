@@ -26,7 +26,7 @@ int main() {
 ## 语法规范
 
 ```ebnf
-CompUnit      ::= [CompUnit] FuncDef;
+CompUnit      ::= [CompUnit] (Decl | FuncDef);
 
 Decl          ::= ConstDecl | VarDecl;
 ConstDecl     ::= "const" BType ConstDef {"," ConstDef} ";";
