@@ -84,6 +84,7 @@ ConstExp      ::= Exp;
 * 当 `VarDef` 含有 `=` 和初始值时, `=` 右边的 `InitVal` 和 `CostInitVal` 的结构要求相同, 唯一的不同是 `ConstInitVal` 中的表达式是 `ConstExp` 常量表达式, 而 `InitVal` 中的表达式可以是当前上下文合法的任何 `Exp`.
 * `VarDef` 中表示各维长度的 `ConstExp` 必须能被求值到非负整数, 但 `InitVal` 中
 的初始值为 `Exp` 可以引用变量.
+* 对于全局数组变量, 初值表达式必须是常量表达式.
 
 ### 初值
 
