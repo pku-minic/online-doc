@@ -8,7 +8,7 @@
 
 ```
 docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
-  autotest -riscv -s lv2 /root/compiler
+  autotest -riscv -s lv1 /root/compiler
 ```
 
 你需要将 `项目目录` 替换为你的编译器项目在宿主机上的路径. 同时, 在运行测试前, 你需要确保你的编译器 (假设名称为 `compiler`) 能处理如下的命令行参数:
