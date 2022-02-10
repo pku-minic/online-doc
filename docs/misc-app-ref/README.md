@@ -4,6 +4,7 @@
 
 附录部分包括:
 
+* [实验环境使用说明](/misc-app-ref/environment).
 * [SysY 语言规范](/misc-app-ref/sysy-spec).
 * [SysY 运行时库](/misc-app-ref/sysy-runtime).
 * [Koopa IR 规范](/misc-app-ref/koopa).
