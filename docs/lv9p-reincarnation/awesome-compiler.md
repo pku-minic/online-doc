@@ -50,13 +50,14 @@ FuncDecl ::= FuncType IDENT "(" [FuncFParams] ")";
 
 ### lisp
 
-[lisp](https://github.com/pku-minic/awesome-sysy/tree/master/lisp) 程序**用纯 SysY 实现了一个带引用计数 GC 的 Lisp 解释器.** 你的编译器不需要支持任何额外特性, 就可以编译这个程序.
+[lisp](https://github.com/pku-minic/awesome-sysy/tree/master/lisp) 程序**用纯 SysY 实现了一个带[引用计数 GC](https://en.wikipedia.org/wiki/Reference_counting) 的 Lisp 解释器.** 你的编译器不需要支持任何额外特性, 就可以编译这个程序.
 
 这个解释器所支持的 [Lisp 语言](https://en.wikipedia.org/wiki/Lisp_(programming_language))也是一种图灵完备的编程语言, 如果你读过/学过 [SICP](https://en.wikipedia.org/wiki/Structure_and_Interpretation_of_Computer_Programs) 的话, 你对 Lisp 应该并不陌生. 比如你可以用解释器执行一些 Lisp 程序:
 
 ```bash
 # 使用你的编译器编译 lisp.c, 然后把结果生成成可执行文件
 # ...
+
 # 向 input.lisp 文件里写入一些 Lisp 代码
 cat > input.lisp <<EOF
 (define fib
@@ -91,7 +92,7 @@ EOF
 
 ## 实现更有趣的程序
 
-你也许会觉得, 上面的示例程序也不够有趣, 你想自己实现一些更有趣的 SysY 程序. 或者, 你觉得你的编译器支持的语法不够炫酷, 你希望给它添加一些更强大的特性, 无论是符合 C 语言风格的特性 (函数声明, 指针, 结构体等), 还是天马行空的特性 (匿名函数, 宏, 泛型等).
+你也许会觉得, 上面的示例程序也不够有趣, 你想自己实现一些更有趣的 SysY 程序, 比如小工具, 小游戏, [demoscene](https://en.wikipedia.org/wiki/Demoscene), 甚至操作系统. 或者, 你觉得你的编译器支持的语法不够炫酷, 你希望给它添加一些更强大的特性, 无论是符合 C 语言风格的特性 (函数声明, 指针, 结构体等), 还是天马行空的特性 (匿名函数, 宏, 泛型等).
 
 我们欢迎任何形式的, 能让你的编译器看起来更有趣的工作. 如果你实现了这些工作, 你可以把它们写进最终的实验报告, 我们会视情况加分.
 
