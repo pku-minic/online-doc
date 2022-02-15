@@ -109,4 +109,4 @@
 <br><br>
 LSRA 和图着色在实现上都有很多细节可以打磨. 比如, 在寄存器数量不足时, 你可以选择 spill 某些变量到栈上, 把另外的变量放入寄存器. 这个 “选择在寄存器中保留哪些变量” 的策略, 本身就可以做得很复杂. 你可以考虑很多东西: 变量的生命周期长短如何? 变量被使用的频率是高是低? 变量是否位于很多层循环之中? 等等. 一个实现的很好的 LSRA, 在分配结果上, 可能和一个实现不怎么好的 LSRA 有着天壤之别.
 <br><br>
-LLVM 所主要使用的寄存器分配策略 ([Greedy](https://github.com/llvm/llvm-project/blob/main/llvm/lib/CodeGen/RegAllocGreedy.cpp)), 即是 LSRA 的一个变种: Greedy Linear Scan, 其分配结果的质量已经足够高了.
+LLVM 所主要使用的寄存器分配策略 ([Greedy](https://github.com/llvm/llvm-project/blob/main/llvm/lib/CodeGen/RegAllocGreedy.cpp)), 即是 LSRA 的一个变种: [Greedy Linear Scan](https://blog.llvm.org/2011/09/greedy-register-allocation-in-llvm-30.html), 其分配结果的质量已经足够高了.
