@@ -106,7 +106,7 @@ Git 是一个版本控制系统 (version control system, VCS). 什么是版本�
 推荐:
 
 * [GDB cheat sheet](https://darkdust.net/files/GDB%20Cheat%20Sheet.pdf).
-* [LLDB cheat sheet](https://darkdust.net/files/GDB%20Cheat%20Sheet.pdf).
+* [LLDB cheat sheet](https://www.nesono.com/sites/default/files/lldb%20cheat%20sheet.pdf).
 
 ## 如何编写简单的 Makefile
 
