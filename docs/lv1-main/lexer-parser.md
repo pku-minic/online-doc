@@ -336,7 +336,7 @@ void yyerror(unique_ptr<string> &ast, const char *s) {
 
 那么, 你一定注意到, 在 Bison 文件中, 我们指定了 parser 函数的参数类型是 `unique_ptr<string> &`, `yylval.str_val` 的类型是 `string *`, 他们都依赖于标准库里对应类的定义. 如果不在头文件里引用对应的头文件, 那么我们的编译器在引用 parser 函数的时候就可能会报错, Flex 生成的 lexer 在编译的时候也一定会报错.
 
-以上就是 Flex 和 Bison 的基本用法了, 我们只需要写不太复杂的内容 ~~(真的吗?)~~, 就可以得到一个 lexer 和一个 parser. 最后的最后, 我们需要新建一个 `.cpp` 文件, 来写一下程序的主函数:
+以上就是 Flex 和 Bison 的基本用法了, 我们只需要写不太复杂的内容 ~(真的吗?)~, 就可以得到一个 lexer 和一个 parser. 最后的最后, 我们需要新建一个 `.cpp` 文件, 来写一下程序的主函数:
 
 ```cpp
 #include <cassert>
