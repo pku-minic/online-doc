@@ -55,7 +55,7 @@
   * [Lv9+.5. 性能测试](/lv9p-reincarnation/perf-testing)
   * [Lv9+.6. 向着更远处进发](/lv9p-reincarnation/go-further)
 * [杂项/附录/参考](/misc-app-ref/)
-  * [为什么学编译](/misc-app-ref/why)
+  * [为什么学编译?](/misc-app-ref/why)
   * [实验环境使用说明](/misc-app-ref/environment)
   * [SysY 语言规范](/misc-app-ref/sysy-spec)
   * [SysY 运行时库](/misc-app-ref/sysy-runtime)
