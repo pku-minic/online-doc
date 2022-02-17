@@ -13,5 +13,5 @@
 * [SysY 语言定义](https://gitlab.eduxiji.net/nscscc/compiler2021/-/blob/master/SysY%E8%AF%AD%E8%A8%80%E5%AE%9A%E4%B9%89.pdf).
 * [SysY 运行时库](https://gitlab.eduxiji.net/nscscc/compiler2021/-/blob/master/SysY%E8%BF%90%E8%A1%8C%E6%97%B6%E5%BA%93.pdf).
 * [LLVM documentation](https://llvm.org/docs/).
-* [Cranekuft IR Reference](https://github.com/bytecodealliance/wasmtime/blob/main/cranelift/docs/ir.md).
+* [Cranelift IR Reference](https://github.com/bytecodealliance/wasmtime/blob/main/cranelift/docs/ir.md).
 * [RISC-V Specifications](https://riscv.org/technical/specifications/).
