@@ -67,12 +67,6 @@ fun @main(): i32 {
 假设你已经把一个 Koopa IR 程序保存在了文件 `hello.koopa` 中, 你可以在实验环境中运行这个 Koopa IR 程序:
 
 ```
-koopac hello.koopa | lli --extra-archive=$CDE_LIBRARY_PATH/native/libsysy.a
-```
-
-另一种方法是, 把这个 Koopa IR 程序编译成可执行文件, 然后运行这个可执行文件:
-
-```
 koopac hello.koopa | llc --filetype=obj -o hello.o
 clang hello.o -L$CDE_LIBRARY_PATH/native -lsysy -o hello
 ./hello

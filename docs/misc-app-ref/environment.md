@@ -129,7 +129,9 @@ autotest -w wd compiler 2>&1 | tee compiler/out.txt
 
 ```
 ./compiler -koopa hello.c -o hello.koopa
-koopac hello.koopa | lli --extra-archive=$CDE_LIBRARY_PATH/native/libsysy.a
+koopac hello.koopa | llc --filetype=obj -o hello.o
+clang hello.o -L$CDE_LIBRARY_PATH/native -lsysy -o hello
+./hello
 ```
 
 使用你的编译器生成 RISC-V 汇编代码, 将其汇编为二进制, 并运行生成的二进制:
