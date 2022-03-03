@@ -395,7 +395,7 @@ int main() { return 0; }
 
 ## Rust 实现
 
-在 Rust 中, 你可以使用 [lalrpop](https://github.com/lalrpop/lalrpop) 来帮你生成词法/语法分析器. 和前文提到的 Flex/Bison 类似, lalrpop 也是一个 LALR 分析器生成器 (从名字就能看出来), 不过它同时接管了词法部分和语法部分, 用起来更简单.
+在 Rust 中, 你可以使用 [lalrpop](https://github.com/lalrpop/lalrpop) 来帮你生成词法/语法分析器. 和前文提到的 Flex/Bison 类似, lalrpop 也是一个 LR/LALR 分析器生成器 (从名字就能看出来), 不过它同时接管了词法部分和语法部分, 用起来更简单.
 
 关于如何入门 lalrpop, 你可以参考 lalrpop 的[文档](https://lalrpop.github.io/lalrpop/), 里面有详细的教程可供学习.
 
