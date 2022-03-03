@@ -9,6 +9,14 @@ docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
   autotest -perf -s perf /root/compiler
 ```
 
+在运行测试前, 你需要确保你的编译器 (假设名称为 `compiler`) 能处理如下的命令行参数:
+
+```
+compiler -perf 输入文件 -o 输出文件
+```
+
+其中, `-perf` 代表此时正在进行性能测试, 你的编译器需要输出 RISC-V 汇编文件, 并且可在此基础上启用一些优化. `输入文件` 代表输入的 SysY 源文件的路径, `输出文件` 代表 RISC-V 汇编的输出文件路径. 你的编译器应该解析 `输入文件`, 并把生成的 RISC-V 汇编输出到 `输出文件` 中.
+
 ## 在线评测
 
 ?> **TODO:** 待补充.
