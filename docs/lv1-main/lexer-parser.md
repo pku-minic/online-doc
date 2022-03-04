@@ -93,7 +93,7 @@ Type ::= "int" | "long";
 
 关于如何入门 Flex/Bison, 你可以参考 [Calc++](https://www.gnu.org/software/bison/manual/html_node/A-Complete-C_002b_002b-Example.html), 或者自行 STFW/RTFM. 此处我们只介绍与开篇的示例程序相关的基本用法.
 
-首先在模板的 `src` 目录中新建两个文件: `sysy.l` 和 `sysy.y`, 前者将会描述词法规则并被 Flex 读取, 后者将会描述语法规则并被 Bison 读取. 由于 Flex 和 Bison 生成的 lexer 和 parser 会互相调用, 所以这两个文件里的内容也相互依赖.
+首先选择一个项目模板, 此处我们以 [`Makefile` 模板](https://github.com/pku-minic/sysy-make-template)为例. 在模板的 `src` 目录中新建两个文件: `sysy.l` 和 `sysy.y`, 前者将会描述词法规则并被 Flex 读取, 后者将会描述语法规则并被 Bison 读取. 由于 Flex 和 Bison 生成的 lexer 和 parser 会互相调用, 所以这两个文件里的内容也相互依赖.
 
 `.l`/`.y` 文件有一些共同点, 比如它们的结构都是:
 
@@ -336,7 +336,7 @@ void yyerror(unique_ptr<string> &ast, const char *s) {
 
 那么, 你一定注意到, 在 Bison 文件中, 我们指定了 parser 函数的参数类型是 `unique_ptr<string> &`, `yylval.str_val` 的类型是 `string *`, 他们都依赖于标准库里对应类的定义. 如果不在头文件里引用对应的头文件, 那么我们的编译器在引用 parser 函数的时候就可能会报错, Flex 生成的 lexer 在编译的时候也一定会报错.
 
-以上就是 Flex 和 Bison 的基本用法了, 我们只需要写不太复杂的内容 ~(真的吗?)~, 就可以得到一个 lexer 和一个 parser. 最后的最后, 我们需要新建一个 `.cpp` 文件, 来写一下程序的主函数:
+以上就是 Flex 和 Bison 的基本用法了, 我们只需要写不太复杂的内容 ~(真的吗?)~, 就可以得到一个 lexer 和一个 parser. 最后的最后, 我们需要新建一个 `.cpp` 文件, 比如叫做 `main.cpp`, 来写一下程序的主函数:
 
 ```cpp
 #include <cassert>
@@ -378,7 +378,17 @@ int main(int argc, const char *argv[]) {
 }
 ```
 
-在 Docker 的实验环境中, 我们可以在模板的目录里执行:
+完成上述内容后, 项目的目录/文件结构是这样的:
+
+* 项目目录.
+  * `src` 目录.
+    * `sysy.l` 文件, 用来描述 lexer.
+    * `sysy.y` 文件, 用来描述 parser.
+    * `main.cpp` 文件, 定义 `main` 函数, 调用 lexer 和 parser, 并输出结果.
+  * `Makefile` 文件.
+  * 其他文件.
+
+在 Docker 的实验环境中, 我们可以在项目的目录里执行:
 
 ```
 make
@@ -503,7 +513,17 @@ fn main() -> Result<()> {
 }
 ```
 
-如果需要运行这个简单的编译器, 你只需要:
+完成上述内容后, 项目的目录/文件结构是这样的:
+
+* 项目目录.
+  * `src` 目录.
+    * `sysy.lalrpop` 文件, 描述了 lexer 和 parser.
+    * `main.rs` 文件, 定义 `main` 函数, 调用 lexer 和 parser, 并输出结果.
+  * `build.rs` 文件, 描述 lalrpop 生成 lexer 和 parser 的操作.
+  * `Cargo.toml` 文件.
+  * 其他文件.
+
+如果需要运行这个简单的编译器, 你只需要在项目目录执行:
 
 ```
 cargo run -- -koopa hello.c -o hello.koopa
