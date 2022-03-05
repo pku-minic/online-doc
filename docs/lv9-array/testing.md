@@ -17,14 +17,14 @@
 测试 Koopa IR:
 
 ```
-docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
+docker run -it --rm -v 项目目录:/root/compiler maxxing/compiler-dev \
   autotest -koopa -s lv9 /root/compiler
 ```
 
 测试 RISC-V 汇编:
 
 ```
-docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
+docker run -it --rm -v 项目目录:/root/compiler maxxing/compiler-dev \
   autotest -riscv -s lv9 /root/compiler
 ```
 
@@ -33,14 +33,14 @@ docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
 测试 Koopa IR:
 
 ```
-docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
+docker run -it --rm -v 项目目录:/root/compiler maxxing/compiler-dev \
   autotest -koopa /root/compiler
 ```
 
 测试 RISC-V 汇编:
 
 ```
-docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
+docker run -it --rm -v 项目目录:/root/compiler maxxing/compiler-dev \
   autotest -riscv /root/compiler
 ```
 

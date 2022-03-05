@@ -5,7 +5,7 @@
 ## 本地测试
 
 ```
-docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
+docker run -it --rm -v 项目目录:/root/compiler maxxing/compiler-dev \
   autotest -perf -s perf /root/compiler
 ```
 

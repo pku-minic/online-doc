@@ -11,7 +11,7 @@
 假设你已经完成了 [Docker 的配置](/lv0-env-config/docker), 你可以执行:
 
 ```
-docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
+docker run -it --rm -v 项目目录:/root/compiler maxxing/compiler-dev \
   autotest -koopa -s lv1 /root/compiler
 ```
 

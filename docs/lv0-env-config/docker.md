@@ -46,7 +46,7 @@ docker pull maxxing/compiler-dev
 你可以使用如下命令在编译实践的 Docker 镜像中执行命令:
 
 ```
-docker run compiler-dev ls -l /
+docker run maxxing/compiler-dev ls -l /
 ```
 
 你会看到屏幕上出现了 `ls -l /` 命令的输出, 内容是 `compiler-dev` 镜像根目录里所有文件的列表.
@@ -66,8 +66,8 @@ docker run compiler-dev ls -l /
 
 ```
 $ docker ps -a
-CONTAINER ID  IMAGE                COMMAND     CREATED         STATUS                     PORTS       NAMES
-696cbe1128ca  compiler-dev:latest  ls -l /     19 seconds ago  Exited (0) 19 seconds ago              vibrant_tharp
+CONTAINER ID  IMAGE                        COMMAND     CREATED         STATUS                     PORTS       NAMES
+696cbe1128ca  maxxing/compiler-dev:latest  ls -l /     19 seconds ago  Exited (0) 19 seconds ago              vibrant_tharp
 ```
 
 命令会列出刚刚我们执行 `docker run` 时创建的临时容器. 很多情况下, 我们只是想用镜像里的环境做一些一次性的工作, 比如用里面的测试脚本测试自己的编译器, 然后查看测试结果. 在此之后这个临时容器就没有任何作用了. 我们可以执行如下命令来删除这个容器:
@@ -81,7 +81,7 @@ docker rm 696cbe1128ca
 当然我们可以简化上述操作:
 
 ```
-docker run --rm compiler-dev ls -l /
+docker run --rm maxxing/compiler-dev ls -l /
 ```
 
 这条命令会使用 `compiler-dev` 镜像创建一个临时容器, 并在其中运行 `ls -l /` 命令, 然后删除刚刚创建的临时容器. 再次执行 `docker ps -a`, 你可以看到, 刚刚创建的容器并没有留下来.
@@ -89,7 +89,7 @@ docker run --rm compiler-dev ls -l /
 我们还可以使用另一种方式运行容器:
 
 ```
-docker run -it --rm compiler-dev bash
+docker run -it --rm maxxing/compiler-dev bash
 ```
 
 这条命令会使用 `compiler-dev` 创建容器, 并在其中执行 `bash`——这是许多 Linux 发行版的默认 Shell, 也就是大家启动终端后看到的命令行界面. 为了能在 Shell 中操作, 我们使用了 `-it` 参数, 这个参数会开启容器的 `stdin` 以便我们输入 (`-i`), 同时 Docker 会为容器分配一个终端 (`-t`).
@@ -106,7 +106,7 @@ bin  boot  dev  etc  home  lib  lib32  lib64  libx32  media  mnt  opt  proc  roo
 在许多情况下, 我们需要让 Docker 容器访问宿主系统中的文件. 比如你的编译器存放在宿主机的 `/home/max/compiler` 目录下, 你希望 Docker 容器也能访问到这个目录里的内容, 这样你就可以使用容器中的测试脚本测试你的编译器了. 你可以执行:
 
 ```
-docker run -it --rm -v /home/max/compiler:/root/compiler compiler-dev bash
+docker run -it --rm -v /home/max/compiler:/root/compiler maxxing/compiler-dev bash
 ```
 
 这条命令和之前的命令相比多了一个 `-v /home/max/compiler:/root/compiler` 选项, 这个选项代表: 我希望把宿主机的 `/home/max/compiler` 目录, 挂载 (mount) 到容器的 `/root/compiler` 目录. 这样, 在进入容器之后, 我们就可以通过访问 `/root/compiler` 来访问宿主机的 `/home/max/compiler` 目录了.

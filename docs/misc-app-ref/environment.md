@@ -9,13 +9,13 @@
 你可以执行如下命令来进入实验环境的命令行:
 
 ```
-docker run -it --rm compiler-dev bash
+docker run -it --rm maxxing/compiler-dev bash
 ```
 
 如果你希望把自己的编译器项目目录挂载到容器中 (大部分情况下都需要这么做), 你可以执行:
 
 ```
-docker run -it --rm -v 项目目录:/root/compiler compiler-dev bash
+docker run -it --rm -v 项目目录:/root/compiler maxxing/compiler-dev bash
 ```
 
 此时你本地的项目目录会出现在容器的 `/root/compiler` 目录中.
@@ -25,7 +25,7 @@ docker run -it --rm -v 项目目录:/root/compiler compiler-dev bash
 ```
 docker run -it --rm -v 项目目录:/root/compiler \
   --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
-  compiler-dev bash
+  maxxing/compiler-dev bash
 ```
 
 ## 准备你的编译器
@@ -90,7 +90,7 @@ autotest -koopa /root/compiler
 此外, 如果只是测试自己的编译器, 你并不需要进入容器的命令行, 你可以直接在宿主机执行:
 
 ```
-docker run -it --rm -v 项目目录:/root/compiler compiler-dev \
+docker run -it --rm -v 项目目录:/root/compiler maxxing/compiler-dev \
   autotest 阶段 /root/compiler
 ```
 
@@ -98,7 +98,7 @@ MaxXing 在开发这套环境时, 常用的测试方法为:
 
 ```shell
 # 先进入 Docker 容器
-docker run -it --rm -v 项目目录:/root/compiler compiler-dev bash
+docker run -it --rm -v 项目目录:/root/compiler maxxing/compiler-dev bash
 # 在容器中运行 autotest, 但指定工作目录 (-w 选项)
 # 同时, 使用 tee 命令将输出保存到文件
 autotest -w wd compiler 2>&1 | tee compiler/out.txt
