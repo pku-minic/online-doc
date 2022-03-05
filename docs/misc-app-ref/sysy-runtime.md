@@ -6,17 +6,9 @@
 
 SysY 运行时库提供一系列 I/O 函数, 计时函数等用于在 SysY 程序中表达输入/输出, 计时等功能需求. 由于 SysY 并不具备 `include` 和函数声明的语法, 这些库函数无需在 SysY 程序中声明, 即可在 SysY 的 函数中使用.
 
-## 相关文件
+## 相关实现
 
-我们提供如下和 SysY 运行时库相关的文件:
-
-* `libsysy.a`: 评测时使用的 SysY 运行时库的静态链接库文件.
-* `sylib.h`: 其中包含 SysY 运行时库涉及的函数等的声明.
-* `sylib.c`: 其中包含 SysY 运行时库涉及的函数等的定义.
-
-?> 评测系统使用的 SysY 源程序中不会出现对 `sylib.h` 文件的包含, 你实现的 SysY 编译器需要正确分析和处理 SysY 程序中对这些函数的调用.
-
-你可以从 [GitHub 上](https://github.com/pku-minic/sysy-runtime-lib/)下载相关的文件.
+你可以从 [GitHub 上](https://github.com/pku-minic/sysy-runtime-lib/)获取 SysY 运行时库的相关实现, 详情见仓库的 [README](https://github.com/pku-minic/sysy-runtime-lib/blob/master/README.md).
 
 ## I/O 函数
 
