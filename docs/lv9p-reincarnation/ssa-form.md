@@ -176,7 +176,7 @@ end:
   jump %end(3)
 
 %end(%a_3: i32):
-  return %a_3
+  ret %a_3
 ```
 
 基本块参数就像函数参数一样, 相信对于你来说, 这并不难理解. 同时, 在 $\phi$ 函数和基本块参数这两种风格之间转换, 也是比较 trivial 的, 此处不再赘述. 至于为什么采用这样的设计, 你可以参考 MaxXing 写的某篇 blog: [SSA 形式的设计取舍: Phi 函数的新形式?](http://blog.maxxsoft.net/index.php/archives/143/).
