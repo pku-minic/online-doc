@@ -88,7 +88,9 @@ arr[1];
 
 ```c
 int arr[2];
-int *ptr = arr + 1 * sizeof(int);
+// 在 C 语言的指针运算中, int 指针加 1
+// 就相当于对指针指向的地址的数值加了 1 * sizeof(int)
+int *ptr = arr + 1;
 *ptr;
 ```
 
