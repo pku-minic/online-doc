@@ -410,7 +410,7 @@ AnnoPair ::= AnnoName [":" AnnoValue];
 
 注解由若干个 `AnnoPair` 构成, 中间以分号分隔, 也可以以分号结尾. `AnnoPair` 包含注解的名称和注解的值, 有些注解只有名称而没有值.
 
-`AnnoName` 实际上是一个字符串, 其中不允许出现任何空白符或其他控制字符. `AnnoName` 的命名格式并无特殊规定, 你愿意的话甚至可以用中文或其他 unicode 字符来表示, 但建议使用 [kebab-case](https://en.wikipedia.org/wiki/Letter_case#Special_case_styles).
+`AnnoName` 实际上是一个字符串, 其中不允许出现任何空白符或其他控制字符. `AnnoName` 的命名格式并无特殊规定, 你愿意的话甚至可以用中文或其他 Unicode 字符来表示, 但建议使用 [kebab-case](https://en.wikipedia.org/wiki/Letter_case#Special_case_styles).
 
 `AnnoValue` 实际上也是一个字符串. 默认情况下, 字符串从 `AnnoName` 后的冒号处开始, 到分号处或注解结束处结束, 首尾空白符会被忽略.
 
