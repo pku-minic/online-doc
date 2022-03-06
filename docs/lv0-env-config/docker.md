@@ -112,3 +112,13 @@ docker run -it --rm -v /home/max/compiler:/root/compiler maxxing/compiler-dev ba
 这条命令和之前的命令相比多了一个 `-v /home/max/compiler:/root/compiler` 选项, 这个选项代表: 我希望把宿主机的 `/home/max/compiler` 目录, 挂载 (mount) 到容器的 `/root/compiler` 目录. 这样, 在进入容器之后, 我们就可以通过访问 `/root/compiler` 来访问宿主机的 `/home/max/compiler` 目录了.
 
 关于 Docker 的其他用法, 请参考 [Docker 的官方文档](https://docs.docker.com/engine/reference/commandline/docker/), 或根据情况自行 STFW.
+
+## 免责声明
+
+!> 请务必注意如下内容!
+
+MaxXing 在设计 `compiler-dev` 的镜像时, 只考虑了直接使用 `docker run` 命令启动容器并在其中运行程序的操作, 并且**只对这种情况进行了测试**.
+
+如果你使用其他方式连接了 Docker 容器, 例如在容器内安装了一个 SSH 然后远程连接, 则我们**不保证**这种使用方式不会出问题!
+
+为避免遇到更多的问题, 我们建议你按照文档的指示来使用 Docker.
