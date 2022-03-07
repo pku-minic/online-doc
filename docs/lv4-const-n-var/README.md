@@ -54,7 +54,7 @@ ConstExp      ::= Exp;
 
 * `ConstDef` 用于定义常量. `ConstDef` 中的 `IDENT` 为常量的标识符, 在 `=` 之后是初始值.
 * `VarDef` 用于定义变量. 当不含有 `=` 和初始值时, 其运行时实际初值未定义.
-* 当 `VarDef` 含有 `=` 和初始值时, `=` 右边的 `InitVal` 和 `CostInitVal` 的结构要求相同, 唯一的不同是 `ConstInitVal` 中的表达式是 `ConstExp` 常量表达式, 而 `InitVal` 中的表达式可以是当前上下文合法的任何 `Exp`.
+* 当 `VarDef` 含有 `=` 和初始值时, `=` 右边的 `InitVal` 和 `ConstInitVal` 的结构要求相同, 唯一的不同是 `ConstInitVal` 中的表达式是 `ConstExp` 常量表达式, 而 `InitVal` 中的表达式可以是当前上下文合法的任何 `Exp`.
 * `ConstExp` 内使用的 `IDENT` 必须是常量, 所有 `ConstExp` 必须在编译时被计算出来.
 * `Block` 内不允许声明重名的变量或常量.
 * `Block` 内定义的变量/常量在定义处到该语句块尾的范围内有效.
