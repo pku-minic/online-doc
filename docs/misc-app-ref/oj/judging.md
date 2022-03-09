@@ -63,6 +63,7 @@ https://gitlab.eduxiji.net/用户名/仓库名.git --branch=分支名
 * **CCTLE**: Compile Compiler Time Limit Exceeded, 评测机在编译你提交的编译器项目时超时 (超过 120s).
 * **CTE**: Compile Testcase Error, 评测机在使用你提交的编译器编译测试用例时出现了问题.
 * **CTTLE**: Compile Testcase Time Limit Exceeded, 评测机在使用你提交的编译器编译测试用例时超时 (编译单个用例的时间超过 120s).
+* **ONF**: Output Not Found, 评测机未找到你的编译器生成的汇编代码.
 * **AE**: Assemble Error, 评测机在汇编你的编译器生成的汇编代码时出现了问题.
 * **ATLE**: Assemble Time Limit Exceeded, 评测机在汇编你的编译器生成的汇编代码时超时 (汇编单个用例的时间超过 60s).
 * **RE**: Runtime Error, 评测机在运行你的编译器生成的测试用例时出现了问题.
