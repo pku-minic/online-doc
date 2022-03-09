@@ -106,7 +106,7 @@ arr[1][2];
 ```koopa
 @arr = alloc [[i32, 3], 2]    // @arr 的类型是 *[[i32, 3], 2]
 %ptr1 = getelemptr @arr, 1    // %ptr1 的类型是 *[i32, 3]
-%ptr2 = getelemptr @arr, 2    // %ptr2 的类型是 *i32
+%ptr2 = getelemptr %ptr1, 2   // %ptr2 的类型是 *i32
 %value = load %ptr2           // %value 的类型是 i32
 // 这是一段类型和功能都正确的 Koopa IR 代码
 ```
