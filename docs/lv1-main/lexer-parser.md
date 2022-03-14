@@ -131,7 +131,7 @@ Type ::= "int" | "long";
 
 我们提供的 Make/CMake 模板会采用如下方式处理你的 Flex/Bison 文件:
 
-```shell
+```bash
 # C++ 模式
 flex -o 文件名.lex.cpp 文件名.l
 bison -d -o 文件名.tab.cpp 文件名.y   # 此时 bison 还会生成 `文件名.tab.hpp`
