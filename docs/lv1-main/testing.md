@@ -34,6 +34,8 @@ compiler -koopa 输入文件 -o 输出文件
 你可以使用发放的账号登录评测平台的代码托管平台 ([eduxiji.gitlab.net](https://gitlab.eduxiji.net)), 然后新建 repo. 之后你就可以按照使用 Git 的一般流程来向代码托管平台提交代码了.
 
 !> **注意:** 请务必将你创建的 repo 的可见性设为 “Private”, 否则所有人都将在平台上看到你提交的代码!
+<br><br>
+此外, 平台的 GitLab **不支持 SSH 登录**, 在从平台 clone 仓库或向平台提交代码时, 请注意使用 HTTPS.
 
 ## 在线评测
 
