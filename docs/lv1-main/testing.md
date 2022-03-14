@@ -25,7 +25,7 @@ compiler -koopa 输入文件 -o 输出文件
 
 测试程序会使用你的编译器将输入编译为 Koopa IR, 然后借助 LLVM 将 Koopa IR 进一步编译成可执行文件. 最后, 测试程序执行可执行文件, 检查程序的返回值 (也就是 `main` 的返回值) 是否符合预期. 测试程序**不会**检查你输出的 Koopa IR 的形式, 你输出的 IR **只要功能正确, 即可通过测试.**
 
-关于实验环境/测试脚本的详细使用方法, 请参考[实验环境使用说明](/misc-app-ref/environment). 关于测试脚本的工作原理, 请 [RTFSC](https://github.com/pku-minic/compiler-dev/blob/master/autotest/autotest).
+关于实验环境/测试脚本的详细使用方法, 请参考[实验环境使用说明](/misc-app-ref/environment). 关于调试编译器的相关思路, 请参考[调试你的编译器](/misc-app-ref/environment?id=调试你的编译器). 关于测试脚本的工作原理, 请 [RTFSC](https://github.com/pku-minic/compiler-dev/blob/master/autotest/autotest).
 
 ## 上传代码到评测平台
 
