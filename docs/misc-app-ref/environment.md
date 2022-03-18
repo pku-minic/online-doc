@@ -145,6 +145,23 @@ autotest -w wd compiler 2>&1 | tee compiler/out.txt
 
 除此之外, `compiler-dev` 镜像中内置的本地测试用例可以在 [GitHub 上找到](https://github.com/pku-minic/compiler-dev-test-cases).
 
+## 使用其他测试用例
+
+`autotest` 支持指定测试用例所在的目录:
+
+```
+autotest -t 测试用例目录 编译器项目目录
+```
+
+如果你不满足于实验环境内附带的测试用例, 你可以自己编写一些测试用例来测试自己的编译器. 当然, 你可以使用一些现成的第三方的测试用例:
+
+* [**compiler2021**](https://gitlab.eduxiji.net/nscscc/compiler2021/-/tree/master/%E5%85%AC%E5%BC%80%E7%94%A8%E4%BE%8B%E4%B8%8E%E8%BF%90%E8%A1%8C%E6%97%B6%E5%BA%93): 编译系统设计赛官方测试用例.
+* [**minic-test-cases-2021s**](https://github.com/pku-minic/minic-test-cases-2021s): 北大编译实践课程 2021 年春季学期使用的测试用例.
+* [**minic-test-cases-2021f**](https://github.com/pku-minic/minic-test-cases-2021f): 北大编译实践课程 2021 年秋季学期使用的测试用例.
+* [**segviol/indigo**](https://github.com/segviol/indigo/tree/develop/test_codes/upload): 2020 年第一届编译系统设计赛北航参赛队开发的 indigo 编译器的内部测试用例.
+* [**TrivialCompiler/TrivialCompiler**](https://github.com/TrivialCompiler/TrivialCompiler/tree/master/custom_test): 2020 年第一届编译系统设计赛清华参赛队开发的 TrivialCompiler 编译器的内部测试用例.
+* [**ustb-owl/lava-test**](https://github.com/ustb-owl/lava-test): 2021 年第二届编译系统设计赛北科参赛队开发的 Lava 编译器的内部测试用例.
+
 ## 实验环境中的工具
 
 实验环境中已经配置了如下工具:
