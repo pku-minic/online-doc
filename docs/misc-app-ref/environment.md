@@ -162,9 +162,10 @@ autotest -t 测试用例目录 编译器项目目录
 * [**TrivialCompiler/TrivialCompiler**](https://github.com/TrivialCompiler/TrivialCompiler/tree/master/custom_test): 2020 年第一届编译系统设计赛清华参赛队开发的 TrivialCompiler 编译器的内部测试用例.
 * [**ustb-owl/lava-test**](https://github.com/ustb-owl/lava-test): 2021 年第二届编译系统设计赛北科参赛队开发的 Lava 编译器的内部测试用例.
 
-!> **注意:** 上述测试用例的源程序扩展名可能为 `.sy`, 你可能需要把这些文件的扩展名修改为 `.c`.
-<br><br>
-此外, 上述测试用例中可能出现不符合编译实践中用到的 SysY 语言的语义定义的情况, 例如出现了不在 $[0, 2^{31} - 1]$ 范围内的整数字面量, 你可以忽略这些测试用例.
+**注意:**
+
+* 测试用例的输出文件 (`.out`) 中的换行符必须是 LF, 但 Windows 上的 Git 可能会自动把所有换行符转换为 CRLF. 如果你正在使用 Windows, 在 clone 上述仓库之前, 请确保你关闭了 Git 的换行符自动转换 (`git config --global core.autocrlf false`).
+* 上述测试用例中可能出现不符合编译实践中用到的 SysY 语言的语义定义的情况, 例如出现了不在 $[0, 2^{31} - 1]$ 范围内的整数字面量, 你可以忽略这些测试用例.
 
 ## 实验环境中的工具
 
