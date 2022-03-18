@@ -162,6 +162,10 @@ autotest -t 测试用例目录 编译器项目目录
 * [**TrivialCompiler/TrivialCompiler**](https://github.com/TrivialCompiler/TrivialCompiler/tree/master/custom_test): 2020 年第一届编译系统设计赛清华参赛队开发的 TrivialCompiler 编译器的内部测试用例.
 * [**ustb-owl/lava-test**](https://github.com/ustb-owl/lava-test): 2021 年第二届编译系统设计赛北科参赛队开发的 Lava 编译器的内部测试用例.
 
+!> **注意:** 上述测试用例的源程序扩展名可能为 `.sy`, 你可能需要把这些文件的扩展名修改为 `.c`.
+<br><br>
+此外, 上述测试用例中可能出现不符合编译实践中用到的 SysY 语言的语义定义的情况, 例如出现了不在 $[0, 2^{31} - 1]$ 范围内的整数字面量, 你可以忽略这些测试用例.
+
 ## 实验环境中的工具
 
 实验环境中已经配置了如下工具:
