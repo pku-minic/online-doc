@@ -71,6 +71,14 @@ class FuncDefAST : public BaseAST {
 
 其他 EBNF 对应的 AST 的定义方式与之类似, 不再赘述.
 
+?> **建议:** 考虑到很多同学在此之前并没有使用 C/C++ 编写大型项目的经验, 对于使用 C/C++ 的同学, 我们建议你将 AST 放在一个单独的头文件中.
+<br><br>
+头文件 (header file) 通常是一种用来存放变量/函数/类声明的文件. 简而言之, 如果你需要在一个 C/C++ 文件中使用另一个文件内定义的变量或函数, 你可以使用 `#include "头文件名"` 的形式, 来引入头文件中的相关声明.
+<br><br>
+不过, 头文件在写法上和普通的 C/C++ 源文件还是存在一些区别的. 在实际的工程项目中, 头文件需要考虑被多次 `#include` 的问题. 比如你在头文件 `A` 里 `#include` 了头文件 `B`, 而在源文件 `C` 里又同时 `#include` 了 `A` 和 `B`, 此时头文件 `B` 会被 `#include` 两次. 如果你没有对 `B` 做任何处理, 那么 `B` 中的声明也会出现两次, 然后编译就会出错.
+<br><br>
+这个问题可以使用在头文件中加入 [include guard](https://en.wikipedia.org/wiki/Include_guard) 的方式解决. 更简单的方法是, 你可以在你写的所有头文件的第一行添加 [`#pragma once`](https://en.wikipedia.org/wiki/Pragma_once).
+
 Rust 实现的编译器也可以采用这种方式定义 AST, 不过一方面, lalrpop 可以很方便地给不同的语法规则定义不同的返回类型; 另一方面, 在 Rust 里用指针, 引用或者多态 (trait object) 总会有些别扭, 所以我们不如直接把不同的 AST 定义成不同的类型.
 
 ```rust
