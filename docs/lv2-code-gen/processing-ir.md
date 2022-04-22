@@ -48,7 +48,7 @@ koopa_delete_program(program);
 
 // 处理完成, 释放 raw program builder 占用的内存
 // 注意, raw program 中所有的指针指向的内存均为 raw program builder 的内存
-// 所以不要在 raw program builder 处理完毕之前释放 builder
+// 所以不要在 raw program 处理完毕之前释放 builder
 koopa_delete_raw_program_builder(builder);
 ```
 
