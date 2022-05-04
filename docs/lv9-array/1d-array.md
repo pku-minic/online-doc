@@ -127,7 +127,7 @@ int arr[3] = {1, 2, 3};
 翻译到 Koopa IR 就是:
 
 ```koopa
-globl @arr = alloc [i32, 3], {1, 2, 3}
+global @arr = alloc [i32, 3], {1, 2, 3}
 ```
 
 Aggregate 中出现的元素必须为彼此之间类型相同的常量, 比如整数, `zeroinit`, 或者另一个 aggregate, 所以多维数组也可以用这种方式初始化. 此外, aggregate 中不能省略任何元素, 对于如下 SysY 程序:
