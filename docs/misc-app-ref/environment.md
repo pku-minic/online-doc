@@ -69,6 +69,51 @@ compiler 阶段 输入文件 -o 输出文件
 
 其他选项类似, 此处不再举例.
 
+## 实验环境中的工具
+
+实验环境中已经配置了如下工具:
+
+* **必要的工具:** `git`, `flex`, `bison`, `python3`.
+* **构建工具:** `make`, `cmake`.
+* **运行工具:** `qemu-user-static`.
+* **编译工具链:** Rust 工具链, LLVM 工具链.
+* **Koopa IR 相关工具:** `libkoopa` (Koopa 的 C/C++ 库), `koopac` (Koopa IR 到 LLVM IR 转换器).
+* **测试脚本:** `autotest`.
+
+举例:
+
+使用你的编译器生成 Koopa IR, 并运行生成的 Koopa IR:
+
+```
+./compiler -koopa hello.c -o hello.koopa
+koopac hello.koopa | llc --filetype=obj -o hello.o
+clang hello.o -L$CDE_LIBRARY_PATH/native -lsysy -o hello
+./hello
+```
+
+使用你的编译器生成 RISC-V 汇编代码, 将其汇编为二进制, 并运行生成的二进制:
+
+```
+./compiler -riscv hello.c -o hello.S
+clang hello.S -c -o hello.o -target riscv32-unknown-linux-elf -march=rv32im -mabi=ilp32
+ld.lld hello.o -L$CDE_LIBRARY_PATH/riscv32 -lsysy -o hello
+qemu-riscv32-static hello
+```
+
+如果需要在实验环境中查看程序的返回值, 你可以在运行程序之后, 紧接着在命令行中执行:
+
+```
+echo $?
+```
+
+比如:
+
+```
+qemu-riscv32-static hello; echo $?
+```
+
+需要注意的是, 程序的 `main` 函数的返回值类型是 `int`, 即支持返回 32 位的返回值. 但你也许会发现, 你使用 `echo $?` 看到的返回值永远都位于 $[0, 255]$ 的区间内. 这是因为 Docker 实验环境内实际上运行的是 Linux 操作系统, Linux 程序退出时会使用 `exit` 系统调用传递返回值, 但接收返回值的一方可能会使用 `wait`, `waitpid` 等系统调用处理返回值, 此时只有返回值的低 8 位会被保留.
+
 ## 测试你的编译器
 
 实验环境内附带了自动测试脚本, 名为 `autotest`. 进入命令行后, 你可以执行如下命令来自动编译并测试项目目录中的编译器:
@@ -145,6 +190,66 @@ autotest -w wd compiler 2>&1 | tee compiler/out.txt
 
 除此之外, `compiler-dev` 镜像中内置的本地测试用例可以在 [GitHub 上找到](https://github.com/pku-minic/compiler-dev-test-cases).
 
+## 调试 RISC-V 程序
+
+编译器确实是个神奇而复杂的东西: 它本身是一个程序, 同时, 它接受一个程序的输入, 并输出另一个程序. 这就使得调试编译器工程变成了一件非常复杂的事情: 你不仅需要调试编译器本身, **还可能需要调试编译器生成的那个程序**——因为你的编译器如果出了问题, 它很可能会生成一个错误的程序.
+
+然后, 可以预见, 你会手忙脚乱. 当然这并不开心.
+
+在 `compiler-dev` 中, 你可以使用调试器来调试编译器生成的 RISC-V 程序. 确切的说, 是调试由编译器生成的 RISC-V 汇编, 经过汇编器和链接器处理后生成的可执行文件, 再使用 `qemu-riscv32-static` 运行后的那个进程.
+
+在此之前, 你需要使用如下方式启动一个 ` compiler-dev` 容器:
+
+```
+docker run -it --rm -v 项目目录:/root/compiler \
+  --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+  maxxing/compiler-dev bash
+```
+
+然后在容器内安装 `gdb-multiarch`——在调试 QEMU 里跑着的 RISC-V 程序这件事上, `lldb` 并不是那么好用:
+
+```
+apt install gdb-multiarch
+```
+
+?> 考虑到你在这个容器里安装了额外的软件, 你可以在启动容器时, 删掉 `--rm` 选项, 以防你不小心退出了容器, 导致容器里的更改全部木大.
+
+此后, 你需要使用你的编译器生成 RISC-V 汇编, 然后借助之前提到的方式, 用 `clang` 和 `ld.lld` 生成 RISC-V 的 ELF 可执行文件. 之后, 用如下方式运行这个程序 (假设生成的 RISC-V 程序叫做 `hello`):
+
+```
+qemu-riscv32-static -g 1234 hello &
+```
+
+`-g 1234` 选项告诉 QEMU 启用调试模式, 并且在本地的 `1234` 端口开一个远程调试服务 (gdbstub), 方便调试器接入. 命令最后的 `&` 告诉 Shell 在后台运行这条命令, 不这么做的话, 这条命令会在前台占用 Shell 的输入, 导致你无法执行后续操作.
+
+接着, 你就可以启动 GDB, 加载 RISC-V 程序, 然后接入 QEMU 进行调试了:
+
+```
+gdb-multiarch hello
+```
+
+在 GDB 的 Shell 中执行 (前面的 `(gdb)` 是提示符, 请勿作为命令执行):
+
+```
+(gdb) target remote 1234
+```
+
+这条命令告诉 GDB 连接到 QEMU 开启的 `1234` 端口进行调试. 在此之后, 所有操作都和本地调试别无二致. 比如你可以:
+
+```
+(gdb) layout asm    # 打开反汇编窗口
+(gdb) focus cmd     # 将焦点切换到 GDB 命令行
+(gdb) b main        # 在 hello 的 main 函数处添加断点
+(gdb) c             # 继续执行, 或者
+(gdb) si            # 单步执行指令
+```
+
+GDB 会在 `main` 函数的入口处停下来, 同时你可以看到, 反汇编窗口正在显示 `hello` 程序中 `main` 函数的汇编代码.
+
+在调试的过程中, 如果程序退出, 或者你操作 GDB 主动杀掉了程序, `qemu-riscv32-static` 也会随之退出. 此时你无法再在调试器里执行 `r` 或者什么其他命令来重新启动程序, 进行第二轮调试. 除非你退出调试器, 回到 Shell, 再执行一次之前的 QEMU 命令.
+
+这么看还是挺麻烦的, 你可能就感慨: Docker 为什么只为你开了一个终端窗口, 如果它能启动多个终端的话, 你就可以在一个终端里执行 QEMU, 在另一个里调试了. 你意识到了这个问题, 非常好! 在容器内安装 `screen`, `tmux` 等程序也许可以解决这个问题, 或者你可以借助 `docker exec -it 容器ID bash` 命令, 再在容器内启动一个 Shell. 具体解决方法你可以自行 STFW, 此处不再赘述.
+
 ## 使用其他测试用例
 
 `autotest` 支持指定测试用例所在的目录:
@@ -166,48 +271,3 @@ autotest -t 测试用例目录 编译器项目目录
 
 * 测试用例的输出文件 (`.out`) 中的换行符必须是 LF, 但 Windows 上的 Git 可能会自动把所有换行符转换为 CRLF. 如果你正在使用 Windows, 在 clone 上述仓库之前, 请确保你关闭了 Git 的换行符自动转换 (`git config --global core.autocrlf false`).
 * 上述测试用例中可能出现不符合编译实践中用到的 SysY 语言的语义定义的情况, 例如出现了不在 $[0, 2^{31} - 1]$ 范围内的整数字面量, 你可以忽略这些测试用例.
-
-## 实验环境中的工具
-
-实验环境中已经配置了如下工具:
-
-* **必要的工具:** `git`, `flex`, `bison`, `python3`.
-* **构建工具:** `make`, `cmake`.
-* **运行工具:** `qemu-user-static`.
-* **编译工具链:** Rust 工具链, LLVM 工具链.
-* **Koopa IR 相关工具:** `libkoopa` (Koopa 的 C/C++ 库), `koopac` (Koopa IR 到 LLVM IR 转换器).
-* **测试脚本:** `autotest`.
-
-举例:
-
-使用你的编译器生成 Koopa IR, 并运行生成的 Koopa IR:
-
-```
-./compiler -koopa hello.c -o hello.koopa
-koopac hello.koopa | llc --filetype=obj -o hello.o
-clang hello.o -L$CDE_LIBRARY_PATH/native -lsysy -o hello
-./hello
-```
-
-使用你的编译器生成 RISC-V 汇编代码, 将其汇编为二进制, 并运行生成的二进制:
-
-```
-./compiler -riscv hello.c -o hello.S
-clang hello.S -c -o hello.o -target riscv32-unknown-linux-elf -march=rv32im -mabi=ilp32
-ld.lld hello.o -L$CDE_LIBRARY_PATH/riscv32 -lsysy -o hello
-qemu-riscv32-static hello
-```
-
-如果需要在实验环境中查看程序的返回值, 你可以在运行程序之后, 紧接着在命令行中执行:
-
-```
-echo $?
-```
-
-比如:
-
-```
-qemu-riscv32-static hello; echo $?
-```
-
-需要注意的是, 程序的 `main` 函数的返回值类型是 `int`, 即支持返回 32 位的返回值. 但你也许会发现, 你使用 `echo $?` 看到的返回值永远都位于 $[0, 255]$ 的区间内. 这是因为 Docker 实验环境内实际上运行的是 Linux 操作系统, Linux 程序退出时会使用 `exit` 系统调用传递返回值, 但接收返回值的一方可能会使用 `wait`, `waitpid` 等系统调用处理返回值, 此时只有返回值的低 8 位会被保留.
