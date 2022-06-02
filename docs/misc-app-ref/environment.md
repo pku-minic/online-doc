@@ -231,7 +231,7 @@ gdb-multiarch hello
 在 GDB 的 Shell 中执行 (前面的 `(gdb)` 是提示符, 请勿作为命令执行):
 
 ```
-(gdb) target remote 1234
+(gdb) target remote :1234
 ```
 
 这条命令告诉 GDB 连接到 QEMU 开启的 `1234` 端口进行调试. 在此之后, 所有操作都和本地调试别无二致. 比如你可以:
