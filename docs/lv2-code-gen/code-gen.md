@@ -53,7 +53,7 @@ for (size_t i = 0; i < raw.funcs.len; ++i) {
 ```c
 for (size_t j = 0; j < func->bbs.len; ++j) {
   assert(func->bbs.kind == KOOPA_RSIK_BASIC_BLOCK);
-  koopa_raw_basic_block_t bb = func->bbs.buffer[j];
+  koopa_raw_basic_block_t bb = (koopa_raw_basic_block_t) func->bbs.buffer[j];
   // 进一步处理当前基本块
   // ...
 }
@@ -74,7 +74,7 @@ koopa_raw_value_t ret_value = value->kind.data.ret.value;
 assert(ret_value->kind.tag == KOOPA_RVT_INTEGER);
 // 于是我们可以按照处理 integer 的方式处理 ret_value
 // integer 中, value 代表整数的数值
-int32_t int_val = ret_val->kind.data.integer.value;
+int32_t int_val = ret_value->kind.data.integer.value;
 // 示例程序中, 这个数值一定是 0
 assert(int_val == 0);
 ```
