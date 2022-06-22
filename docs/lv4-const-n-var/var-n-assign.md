@@ -231,7 +231,7 @@ main:
   lw t0, 8(sp)
   sw t0, 0(sp)
 
-  # %2 = load %x
+  # %2 = load @x
   lw t0, 0(sp)
   sw t0, 12(sp)
 
