@@ -291,3 +291,30 @@ Exp ::= LOrExp;
 3. `LVal` 必须是当前作用域内, 该 `Exp` 语句之前曾定义过的变量或常量. 赋值号左边的 `LVal` 必须是变量.
 4. 函数调用形式是 `IDENT "(" FuncRParams ")"`, 其中的 `FuncRParams` 表示实际参数. 实际参数的类型和个数必须与 `IDENT` 对应的函数定义的形参完全匹配.
 5. SysY 中算符的优先级与结合性与 C 语言一致, 上一节定义的 SysY 文法中已体现了优先级与结合性的定义.
+
+### 求值顺序
+
+在SysY中，可能出现如下三种求值顺序影响运行结果的例子（如果你想到了其它可能的情况，请告知助教）
+
+```c
+int i = 0;
+int a[10];
+
+int g(){
+    i = i + 1;
+    return i;
+}
+int max(int a, int b){
+    if(a > b){
+        return a;
+    }
+    return b;
+}
+max(g(), g());  // 类型1, 函数参数的求值顺序影响结果
+a[i][g()] = 2;  // 类型2, 数组下标的求值顺序影响结果
+a[i] = g();     // 类型3, 赋值运算符的左右操作数求值顺序影响结果
+```
+
+参考C语言的[Order of evaluation](https://en.cppreference.com/w/c/language/eval_order)和C++语言的[Order of evaluation](https://en.cppreference.com/w/cpp/language/eval_order)，我们知道：在C语言中，以上三种类型均为UB，而在C++中，从C++17以后，类型1为UB，类型2，3为良定义（参考规则17，20）。
+
+SysY语言采取和C语言一样的求值顺序约定，定义以上三种类型均为UB。
