@@ -296,30 +296,58 @@ Exp ::= LOrExp;
 
 在 SysY 中, 可能出现如下三种求值顺序影响运行结果的例子 (如果你想到了其它可能的情况，请告知助教):
 
+类型 1, 表达式操作数/函数参数的求值顺序影响结果:
+
 ```c
-int i = 0;
-int a[10];
+int f(int x) {
+  putint(x);
+  return x;
+}
+
+void g(int x, int y) {}
+
+int main() {
+  g(f(1), f(2));      // 可能输出 12 或 21
+  return f(3) + f(4); // 可能输出 34 或 43
+}
+```
+
+类型 2, 数组下标的求值顺序影响结果:
+
+```c
+int i = 0, a[10][10];
 
 int g() {
   i = i + 1;
   return i;
 }
 
-int max(int a, int b) {
-  if (a > b) {
-    return a;
-  }
-  return b;
+int main() {
+  a[i][g()] = 2;
+  putint(a[0][1]);
+  putint(a[1][1]);
+  return 0;         // 可能输出 02 或 20
+}
+```
+
+类型 3, 赋值运算符的左右操作数求值顺序影响结果:
+
+```c
+int i = 0, a[10];
+
+int g() {
+  i = i + 1;
+  return i;
 }
 
 int main() {
-  max(g(), g());  // 类型 1, 函数参数的求值顺序影响结果
-  a[i][g()] = 2;  // 类型 2, 数组下标的求值顺序影响结果
-  a[i] = g();     // 类型 3, 赋值运算符的左右操作数求值顺序影响结果
-  return 0;
+  a[i] = g();
+  putint(a[0]);
+  putint(a[1]);
+  return 0;     // 可能输出 01 或 10
 }
 ```
 
 参考 C 语言的 [Order of evaluation](https://en.cppreference.com/w/c/language/eval_order) 和 C++ 语言的 [Order of evaluation](https://en.cppreference.com/w/cpp/language/eval_order), 我们知道: 在 C 语言中, 以上三种类型均为 UB; 而在 C++ 中, 从 C++17 以后, 类型 1 为 UB, 类型 2, 3 为良定义 (参考规则 17, 20).
 
-SysY 语言采取和 C 语言一样的求值顺序约定, 定义以上三种类型均为 UB.
+SysY 语言采取和 C 语言一样的求值顺序约定, **定义以上三种类型均为 UB**.
