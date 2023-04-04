@@ -236,8 +236,8 @@ trait GenerateAsm {
 
 impl GenerateAsm for koopa::ir::Program {
   fn generate(&self) {
-    for &func in program.func_layout() {
-      program.func(func).generate();
+    for &func in self.func_layout() {
+      self.func(func).generate();
     }
   }
 }
