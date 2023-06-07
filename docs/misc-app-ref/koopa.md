@@ -60,7 +60,7 @@ Aggregate ::= "{" Initializer {"," Initializer} "}";
 ### 语法
 
 ```ebnf
-SymbolDef ::= SYMBOL "=" (MemoryDeclaration | Load | GetPointer | BinaryExpr | FunCall);
+SymbolDef ::= SYMBOL "=" (MemoryDeclaration | Load | GetPointer | GetElementPointer | BinaryExpr | FunCall);
 GlobalSymbolDef ::= "global" SYMBOL "=" GlobalMemoryDeclaration;
 ```
 
