@@ -39,7 +39,7 @@
 [mandelbrot](https://github.com/pku-minic/awesome-sysy/blob/master/mandelbrot) 程序可以绘制 [Mandelbrot 集](https://en.wikipedia.org/wiki/Mandelbrot_set), 并且把绘制的结果输出到图像中. 这个程序要求你的 SysY 编译器支持函数声明的语法:
 
 ```ebnf
-FuncDecl ::= FuncType IDENT "(" [FuncFParams] ")";
+FuncDecl ::= FuncType IDENT "(" [FuncFParams] ")" ";";
 ```
 
 其语义和 C 语言中的函数声明类似. 程序输出的图像如下:
