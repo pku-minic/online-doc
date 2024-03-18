@@ -19,7 +19,7 @@
   * [Lv2.3. 测试](/lv2-code-gen/testing)
 * [Lv3. 表达式](/lv3-expr/)
   * [Lv3.1. 一元表达式](/lv3-expr/unary-exprs)
-  * [Lv3.2. 算数表达式](/lv3-expr/arithmetic-exprs)
+  * [Lv3.2. 算术表达式](/lv3-expr/arithmetic-exprs)
   * [Lv3.3. 比较和逻辑表达式](/lv3-expr/comp-n-logical-exprs)
   * [Lv3.4. 测试](/lv3-expr/testing)
 * [Lv4. 常量和变量](/lv4-const-n-var/)
