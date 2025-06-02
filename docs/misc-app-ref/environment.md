@@ -266,6 +266,7 @@ autotest -t 测试用例目录 编译器项目目录
 * [**segviol/indigo**](https://github.com/segviol/indigo/tree/develop/test_codes/upload): 2020 年第一届编译系统设计赛北航参赛队开发的 indigo 编译器的内部测试用例.
 * [**TrivialCompiler/TrivialCompiler**](https://github.com/TrivialCompiler/TrivialCompiler/tree/master/custom_test): 2020 年第一届编译系统设计赛清华参赛队开发的 TrivialCompiler 编译器的内部测试用例.
 * [**ustb-owl/lava-test**](https://github.com/ustb-owl/lava-test): 2021 年第二届编译系统设计赛北科参赛队开发的 Lava 编译器的内部测试用例.
+* [**jokerwyt/sysy-testsuit-collection**](https://github.com/jokerwyt/sysy-testsuit-collection): 北京大学编译原理课程 2024 年春季选课学生所整理的467个测试用例。
 
 **注意:**
 
