@@ -34,6 +34,19 @@ const getActiveNode = () => {
   return node
 }
 
+const findTagParent = (curNode, tagName, level) => {
+  if (curNode && curNode.tagName === tagName) return curNode
+  let l = 0
+  while (curNode) {
+    l++
+    if (l > level) return
+    if (curNode.parentNode.tagName === tagName) {
+      return curNode.parentNode
+    }
+    curNode = curNode.parentNode
+  }
+}
+
 const registerPlugin = () => {
   $docsify.plugins.push(scrollBarSyncPlugin)
 }
