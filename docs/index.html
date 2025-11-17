@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="//npm.elemecdn.com/docsify-darklight-theme@3/dist/docsify-themeable/style.min.css">
   <link rel="stylesheet" href="//npm.elemecdn.com/docsify-themeable@0/dist/css/theme-simple.css" title="light">
   <link rel="stylesheet alternative" href="//npm.elemecdn.com/docsify-themeable@0/dist/css/theme-simple-dark.css" title="dark">
-  <link rel="stylesheet" href="//npm.elemecdn.com/gitalk/dist/gitalk.css">
   <link rel="stylesheet" href="//npm.elemecdn.com/katex@latest/dist/katex.min.css"/>
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="apple-touch-icon-precomposed" sizes="152x152" href="assets/icons/apple-touch-icon-precomposed-152.png">
@@ -57,25 +56,28 @@
   <script src="//npm.elemecdn.com/prismjs@1/components/prism-makefile.min.js"></script>
   <script src="//npm.elemecdn.com/prismjs@1/components/prism-bison.min.js"></script>
   <script src="//npm.elemecdn.com/prismjs@1/components/prism-rust.min.js"></script>
-  <script src="//npm.elemecdn.com/docsify/lib/plugins/gitalk.min.js"></script>
-  <script src="//npm.elemecdn.com/gitalk/dist/gitalk.min.js"></script>
   <script src="//npm.elemecdn.com/@alertbox/docsify-footer/dist/docsify-footer.min.js"></script>
   <script src="//npm.elemecdn.com/@sujaykumarh/docsify-plugin-title@1.x/dist/plugin.min.js"></script>
   <script src="//npm.elemecdn.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
   <script src="//npm.elemecdn.com/docsify-katex@latest/dist/docsify-katex.js"></script>
   <script src="//npm.elemecdn.com/docsify-copy-code@2.1.0/dist/docsify-copy-code.min.js"></script>
   <script src="assets/js/sidebar.js"></script>
-  <script>
-    const gitalk = new Gitalk({
-      clientID: '37025e12cf1bb49f657a',
-      clientSecret: '1878173781753c925c7d97ec5a9d754f5bbd1145',
-      repo: 'online-doc',
-      owner: 'pku-minic',
-      admin: ['MaxXSoft'],
-      id: document.title,
-      distractionFreeMode: false
-    })
-    gitalk.render('gitalk-container')
+  <script src="https://giscus.app/client.js"
+          data-repo="pku-minic/online-doc"
+          data-repo-id="MDEwOlJlcG9zaXRvcnkzMDkxMjQ2MDE="
+          data-category="Announcements"
+          data-category-id="DIC_kwDOEmzd-c4Cx2Sr"
+          data-mapping="pathname"
+          data-strict="0"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="bottom"
+          data-theme="preferred_color_scheme"
+          data-lang="zh-CN"
+          data-loading="lazy"
+          crossorigin="anonymous"
+          async>
   </script>
+  <script src="assets/js/giscus.js"></script>
 </body>
 </html>

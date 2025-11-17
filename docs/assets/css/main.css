@@ -21,3 +21,14 @@
 :root {
   --code-font-size: calc(var(--font-size-m) * 0.9)
 }
+
+/* Giscus */
+.giscus {
+  margin: 1em 0;
+}
+.giscus-frame {
+  max-width: var(--content-max-width);
+  display: block;
+  margin: 0 auto;
+  padding: 0 45px;
+}

@@ -47,8 +47,4 @@ const findTagParent = (curNode, tagName, level) => {
   }
 }
 
-const registerPlugin = () => {
-  $docsify.plugins.push(scrollBarSyncPlugin)
-}
-
-registerPlugin()
+$docsify.plugins.push(scrollBarSyncPlugin)
