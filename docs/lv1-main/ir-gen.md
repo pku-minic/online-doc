@@ -115,7 +115,7 @@ fun @main(): i32 {  // main 函数的定义
 * 像定义 AST 一样定义表示 Koopa IR 的数据结构 (比如指令/基本块/函数等等), 然后遍历 AST 输出这种结构, 再遍历这种结构输出字符串.
 * 对于使用 C/C++ 的同学, 在上一条的基础上, 你可以考虑把这种结构转换成 raw program, 然后使用 `libkoopa` 中的相关接口, 将 raw program 转换成其他形式的 Koopa IR 程序.
 
-!> 关于最后一种思路, 你可以参考 `libkoopa` 的[头文件](https://github.com/pku-minic/koopa/blob/master/crates/libkoopa/include/koopa.h), 其中定义了 raw program 的相关结构, 以及 Koopa IR 框架对 C/C++ 暴露的相关接口. 对熟悉 C/C++ 的同学来说, 这些内容应该不难理解.
+!> 关于最后一种思路, 你可以参考 `libkoopa` 的[头文件](https://github.com/pku-minic/koopa/blob/master/libkoopa/include/koopa.h), 其中定义了 raw program 的相关结构, 以及 Koopa IR 框架对 C/C++ 暴露的相关接口. 对熟悉 C/C++ 的同学来说, 这些内容应该不难理解.
 <br><br>
 由于文档作者 MaxXing 单枪匹马持续输出, 关于 `libkoopa` 提供的基础设施, 以及如何借助这些设施生成内存形式的 Koopa IR 程序的相关内容暂未补全. 希望他有时间可以写一下.
 

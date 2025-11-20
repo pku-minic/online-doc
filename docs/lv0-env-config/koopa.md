@@ -8,7 +8,7 @@
 
 Koopa IR 是一种专为北京大学编译原理课程实践设计的教学用的中间表示 (IR), 它在设计上类似 LLVM IR, 但简化了很多内容, 方便大家上手和理解.
 
-同时, 我们为 Koopa IR 开发了对应的框架 ([koopa](https://github.com/pku-minic/koopa) 和 [libkoopa](https://github.com/pku-minic/koopa/tree/master/crates/libkoopa)), 大家在使用 C/C++/Rust 编程时, 可以直接调用框架的接口, 实现 Koopa IR 的生成/解析/转换.
+同时, 我们为 Koopa IR 开发了对应的框架 ([koopa](https://github.com/pku-minic/koopa) 和 [libkoopa](https://github.com/pku-minic/koopa/tree/master/libkoopa)), 大家在使用 C/C++/Rust 编程时, 可以直接调用框架的接口, 实现 Koopa IR 的生成/解析/转换.
 
 Koopa IR 是一种强类型的 IR, IR 中的所有值 (`Value`) 和函数 (`Function`) 都具备类型 (`Type`). 这种设计避免了一些 IR 定义上的模糊之处, 例如之前的教学用 IR 完全不区分整数变量和数组变量, 很容易出现混淆; 同时可以在生成 IR 之前就确定 IR 中存在的部分问题, 例如将任意整数作为内存地址并向其中存储数据.
 
