@@ -30,8 +30,7 @@ const giscusPlugin = (hook, vm) => {
 const setupGiscusTerm = (iframe) => {
   // Replace `term` parameter in iframe src.
   const src = iframe.getAttribute('src')
-  let term = decodeURIComponent(location.hash).replace('#', '')
-  if (!term) term = '/'
+  const term = document.body.getAttribute('data-page').replace(/\.\w+$/, '')
   const newSrc = src.replace(/term=[^&]*/, `term=${encodeURIComponent(term)}`)
   iframe.setAttribute('src', newSrc)
 }
