@@ -65,7 +65,7 @@ koopa_delete_raw_program_builder(builder);
 
 如果你的项目基于我们提供的 Make/CMake 模板, 则测试脚本/评测平台编译你的项目时, 会自动链接 `libkoopa`, 你无需为此操心.
 
-如果你在编码时需要让编辑器/IDE 识别 `koopa.h` 文件中的声明, 你可以在 `libkoopa` 的仓库中获取到[这个头文件](https://github.com/pku-minic/koopa/blob/master/crates/libkoopa/include/koopa.h). 同时, 头文件中包含了所有 raw program 相关的数据结构的定义 (含详细注释), 你可以通过 RTFSC 来进一步了解 raw program 的结构.
+如果你在编码时需要让编辑器/IDE 识别 `koopa.h` 文件中的声明, 你可以在 `libkoopa` 的仓库中获取到[这个头文件](https://github.com/pku-minic/koopa/blob/master/libkoopa/include/koopa.h). 同时, 头文件中包含了所有 raw program 相关的数据结构的定义 (含详细注释), 你可以通过 RTFSC 来进一步了解 raw program 的结构.
 
 ## Rust 实现
 
