@@ -89,7 +89,7 @@ Type ::= "int" | "long";
 在 C/C++ 中, 你可以使用 Flex 和 Bison 来分别生成词法分析器和语法分析器. 其中:
 
 * Flex 用来描述 EBNF 中的终结符部分, 也就是描述 token 的形式和种类. 你可以使用正则表达式来描述 token.
-* Bison 用来描述 EBNF 本身, 其依赖于 Flex 中的终结符描述. 它会生成一个 LALR parser.
+* Bison 用来描述 EBNF 本身, 其依赖于 Flex 中的终结符描述. 它会生成一个 [LALR parser](https://en.wikipedia.org/wiki/LALR_parser).
 
 关于如何入门 Flex/Bison, 你可以参考 [Calc++](https://www.gnu.org/software/bison/manual/html_node/A-Complete-C_002b_002b-Example.html), 或者自行 STFW/RTFM. 此处我们只介绍与开篇的示例程序相关的基本用法.
 
