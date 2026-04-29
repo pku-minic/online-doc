@@ -37,7 +37,7 @@ BlockItem     ::= Decl | Stmt;
 Stmt          ::= LVal "=" Exp ";"
                 | [Exp] ";"
                 | Block
-                | "return" [Exp] ";";
+                | "return" Exp ";";
 
 Exp           ::= LOrExp;
 LVal          ::= IDENT;

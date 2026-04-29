@@ -41,7 +41,7 @@ Stmt          ::= LVal "=" Exp ";"
                 | "while" "(" Exp ")" Stmt
                 | "break" ";"
                 | "continue" ";"
-                | "return" [Exp] ";";
+                | "return" Exp ";";
 
 Exp           ::= LOrExp;
 LVal          ::= IDENT;

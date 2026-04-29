@@ -6,7 +6,7 @@
 Stmt ::= LVal "=" Exp ";"
        | [Exp] ";"
        | Block
-       | "return" [Exp] ";";
+       | "return" Exp ";";
 ```
 
 ## 一个例子
