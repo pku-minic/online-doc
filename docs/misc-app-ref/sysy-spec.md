@@ -1,6 +1,6 @@
 # SysY 语言规范
 
-?> SysY 官方的语言定义见[这里](https://gitlab.eduxiji.net/nscscc/compiler2021/-/blob/master/SysY%E8%AF%AD%E8%A8%80%E5%AE%9A%E4%B9%89.pdf).
+?> SysY 官方的语言定义见[这里](https://gitlab.eduxiji.net/csc1/nscscc/compiler2021/-/blob/master/SysY%E8%AF%AD%E8%A8%80%E5%AE%9A%E4%B9%89.pdf).
 <br><br>
 编译实践课所使用的 SysY 语言和官方定义略有不同: 实践课的 SysY 向下兼容官方定义.
 
@@ -98,7 +98,7 @@ identifier ::= identifier-nondigit
 
 其中, `identifier-nondigit` 为下划线, 小写英文字母或大写英文字母; `digit` 为数字 0 到 9.
 
-关于其他信息, 请参考 [ISO/IEC 9899](http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf) 第 51 页关于标识符的定义.
+关于其他信息, 请参考 [ISO/IEC 9899](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf) 第 51 页关于标识符的定义.
 
 对于同名**标识符**, SysY 中有以下约定:
 
@@ -127,7 +127,7 @@ hexadecimal-prefix  ::= "0x" | "0X";
 
 数值常量的范围为 $[0, 2^{31} - 1]$, 不包含负号.
 
-关于其他信息, 请参考 [ISO/IEC 9899](http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf) 第 54 页关于整数型常量的定义, 在此基础上忽略所有后缀.
+关于其他信息, 请参考 [ISO/IEC 9899](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf) 第 54 页关于整数型常量的定义, 在此基础上忽略所有后缀.
 
 ### 注释
 
@@ -136,7 +136,7 @@ SysY 语言中注释的规范与 C 语言一致, 如下:
 * 单行注释: 以序列 `//` 开始, 直到换行符结束, 不包括换行符.
 * 多行注释: 以序列 `/*` 开始, 直到第一次出现 `*/` 时结束, 包括结束处 `*/`.
 
-关于其他信息, 请参考 [ISO/IEC 9899](http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf) 第 66 页关于注释的定义.
+关于其他信息, 请参考 [ISO/IEC 9899](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf) 第 66 页关于注释的定义.
 
 ## 语义约束
 

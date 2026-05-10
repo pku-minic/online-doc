@@ -1,6 +1,6 @@
 # SysY 运行时库
 
-?> SysY 官方的运行时库规范见[这里](https://gitlab.eduxiji.net/nscscc/compiler2021/-/blob/master/SysY%E8%BF%90%E8%A1%8C%E6%97%B6%E5%BA%93.pdf).
+?> SysY 官方的运行时库规范见[这里](https://gitlab.eduxiji.net/csc1/nscscc/compiler2021/-/blob/master/SysY%E8%BF%90%E8%A1%8C%E6%97%B6%E5%BA%93.pdf).
 <br><br>
 编译实践课所使用的 SysY 运行时库和官方定义略有不同: 实践课的 `getch` 定义了遇到 `EOF` 时的行为, 同时计时函数的定义比官方定义更加简单.
 

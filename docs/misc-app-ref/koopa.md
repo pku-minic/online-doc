@@ -365,7 +365,7 @@ BlockParamList ::= "(" SYMBOL ":" Type {"," SYMBOL ":" Type} ")";
 
 Koopa 支持 SSA 形式, 但这并非是必选内容. 为了实现更多更强大的优化, 你可以选择将 Koopa 转换到 SSA 形式. 但我觉得这部分内容不应该放在本科编译原理的课程实践中, 也许可以针对本科生再开一门和编译优化相关的课程.
 
-我们并没有选择让 SSA 的 Koopa 采用 Phi 函数的形式, 虽然我们之前确实这么做了, 但权衡之下, 我们决定采用另一种等价的形式: 基本块参数 (basic block arguments). 相比传统的 Phi 函数, 这种形式在实现上要简单得多, 且在不削弱表达能力的情况下, 可以更好的分离数据流和控制流. 关于 SSA 形式设计的讨论, 请参考 MaxXing 的[这篇博文](http://blog.maxxsoft.net/index.php/archives/143/).
+我们并没有选择让 SSA 的 Koopa 采用 Phi 函数的形式, 虽然我们之前确实这么做了, 但权衡之下, 我们决定采用另一种等价的形式: 基本块参数 (basic block arguments). 相比传统的 Phi 函数, 这种形式在实现上要简单得多, 且在不削弱表达能力的情况下, 可以更好的分离数据流和控制流. 关于 SSA 形式设计的讨论, 请参考 MaxXing 的[这篇博文](https://blog.maxxsoft.net/index.php/archives/143/).
 
 在该形式下, 原先的 Phi 语义使用基本块参数进行表示. 在进入带参数基本块时, 前驱的基本块的最后一条转移指令中必须传递基本块的实际参数. 基本块中的指令可以通过使用形式参数的方式来使用这些传入的值.
 
@@ -410,7 +410,7 @@ AnnoPair ::= AnnoName [":" AnnoValue];
 
 注解由若干个 `AnnoPair` 构成, 中间以分号分隔, 也可以以分号结尾. `AnnoPair` 包含注解的名称和注解的值, 有些注解只有名称而没有值.
 
-`AnnoName` 实际上是一个字符串, 其中不允许出现任何空白符或其他控制字符. `AnnoName` 的命名格式并无特殊规定, 你愿意的话甚至可以用中文或其他 Unicode 字符来表示, 但建议使用 [kebab-case](https://en.wikipedia.org/wiki/Letter_case#Special_case_styles).
+`AnnoName` 实际上是一个字符串, 其中不允许出现任何空白符或其他控制字符. `AnnoName` 的命名格式并无特殊规定, 你愿意的话甚至可以用中文或其他 Unicode 字符来表示, 但建议使用 [kebab-case](https://en.wikipedia.org/wiki/Letter_case#Use_within_programming_languages).
 
 `AnnoValue` 实际上也是一个字符串. 默认情况下, 字符串从 `AnnoName` 后的冒号处开始, 到分号处或注解结束处结束, 首尾空白符会被忽略.
 
