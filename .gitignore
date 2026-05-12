@@ -36,3 +36,7 @@ Temporary Items
 # Build & Debug
 build
 debug
+
+# Python
+__pycache__
+.venv
