@@ -35,39 +35,40 @@ from markdown_it.token import Token
 
 
 DEFAULT_CONFIG: dict[str, Any] = {
-  'scan': {
-    'paths': ['README.md', 'docs'],
-    'extensions': ['.md', '.html'],
-    'exclude': ['docs/assets/**'],
-    'docs_root': 'docs',
-  },
-  'http': {
-    'timeout': 15,
-    'retries': 1,
-    'workers': 8,
-    'user_agent': 'pku-minic-online-doc-link-checker/1.0',
-    'accepted_statuses': [401, 403, 429],
-    'accepted_status_ranges': [[200, 399]],
-    'check_fragments': True,
-    'max_fragment_page_bytes': 2_000_000,
-  },
-  'ignore': [],
+    'scan': {
+        'paths': ['README.md', 'docs'],
+        'extensions': ['.md', '.html'],
+        'exclude': ['docs/assets/**'],
+        'docs_root': 'docs',
+    },
+    'http': {
+        'timeout': 15,
+        'retries': 1,
+        'workers': 8,
+        'user_agent': 'pku-minic-online-doc-link-checker/1.0',
+        'accepted_statuses': [401, 403, 429],
+        'accepted_status_ranges': [[200, 399]],
+        'check_fragments': True,
+        'max_fragment_page_bytes': 2_000_000,
+    },
+    'ignore': [],
 }
 
 BARE_URL_RE = re.compile(r'(?:(?:https?:)?//)[^\s<>\'"]+')
 HTML_ID_RE = re.compile(r'\s(?:id|name)\s*=\s*([\'"])(.*?)\1', re.IGNORECASE)
 SKIPPED_SCHEMES = {
-  'data',
-  'file',
-  'ftp',
-  'irc',
-  'ircs',
-  'javascript',
-  'mailto',
-  'tel',
+    'data',
+    'file',
+    'ftp',
+    'irc',
+    'ircs',
+    'javascript',
+    'mailto',
+    'tel',
 }
 
-MARKDOWN = MarkdownIt('commonmark', {'html': True, 'linkify': True}).enable('linkify')
+MARKDOWN = MarkdownIt(
+    'commonmark', {'html': True, 'linkify': True}).enable('linkify')
 
 
 @dataclasses.dataclass(frozen=True)
@@ -141,14 +142,14 @@ class IgnoreRule:
 
 class LinkHtmlParser(html.parser.HTMLParser):
   LINK_ATTRS = {
-    'a': {'href'},
-    'area': {'href'},
-    'iframe': {'src'},
-    'img': {'src', 'srcset'},
-    'link': {'href'},
-    'script': {'src'},
-    'source': {'src', 'srcset'},
-    'video': {'poster', 'src'},
+      'a': {'href'},
+      'area': {'href'},
+      'iframe': {'src'},
+      'img': {'src', 'srcset'},
+      'link': {'href'},
+      'script': {'src'},
+      'source': {'src', 'srcset'},
+      'video': {'poster', 'src'},
   }
 
   def __init__(self, source: Path, base_line: int = 1) -> None:
@@ -156,6 +157,10 @@ class LinkHtmlParser(html.parser.HTMLParser):
     self.source = source
     self.base_line = base_line
     self.links: list[Link] = []
+
+  @staticmethod
+  def parse_srcset(value: str) -> list[str]:
+    return [item.strip().split()[0] for item in value.split(',') if item.strip().split()]
 
   def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
     wanted = self.LINK_ATTRS.get(tag.lower())
@@ -166,8 +171,9 @@ class LinkHtmlParser(html.parser.HTMLParser):
       if value is None or attr.lower() not in wanted:
         continue
       kind = f'html-{attr.lower()}'
-      for url in parse_srcset(value) if attr.lower() == 'srcset' else [value]:
-        self.links.append(Link(self.source, self.base_line + line - 1, column + 1, url, kind))
+      for url in self.parse_srcset(value) if attr.lower() == 'srcset' else [value]:
+        self.links.append(Link(self.source, self.base_line +
+                          line - 1, column + 1, url, kind))
 
 
 class AnchorHtmlParser(html.parser.HTMLParser):
@@ -181,17 +187,9 @@ class AnchorHtmlParser(html.parser.HTMLParser):
         self.anchors.add(value)
 
 
-def parse_args() -> argparse.Namespace:
-  parser = argparse.ArgumentParser(description='Check links in the documentation.')
-  parser.add_argument('--config', default='check-links.toml', help='TOML configuration file.')
-  parser.add_argument('--root', default='.', help='Repository root. Defaults to the current directory.')
-  parser.add_argument('--no-http', action='store_true', help='Skip remote HTTP(S) checks.')
-  parser.add_argument('--verbose', action='store_true', help='Print checked link counts.')
-  return parser.parse_args()
-
-
 def deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
-  merged = {key: value.copy() if isinstance(value, dict) else value for key, value in base.items()}
+  merged = {key: value.copy() if isinstance(value, dict)
+            else value for key, value in base.items()}
   for key, value in override.items():
     if isinstance(value, dict) and isinstance(merged.get(key), dict):
       merged[key] = deep_merge(merged[key], value)
@@ -219,15 +217,15 @@ def load_ignore_rules(config: dict[str, Any]) -> list[IgnoreRule]:
     if isinstance(statuses, list):
       statuses = tuple(int(status) for status in statuses)
     rules.append(IgnoreRule(
-      reason=str(item.get('reason', '')),
-      url=item.get('url'),
-      url_regex=item.get('url_regex'),
-      path=item.get('path'),
-      path_glob=item.get('path_glob'),
-      line=item.get('line'),
-      category=item.get('category'),
-      status=item.get('status'),
-      statuses=statuses,
+        reason=str(item.get('reason', '')),
+        url=item.get('url'),
+        url_regex=item.get('url_regex'),
+        path=item.get('path'),
+        path_glob=item.get('path_glob'),
+        line=item.get('line'),
+        category=item.get('category'),
+        status=item.get('status'),
+        statuses=statuses,
     ))
   return rules
 
@@ -239,7 +237,8 @@ def discover_files(root: Path, config: dict[str, Any]) -> list[Path]:
   files: list[Path] = []
   for raw_path in scan.get('paths', []):
     path = root / raw_path
-    candidates = [path] if path.is_file() else [candidate for candidate in path.rglob('*') if candidate.is_file()]
+    candidates = [path] if path.is_file(
+    ) else [candidate for candidate in path.rglob('*') if candidate.is_file()]
     for candidate in candidates:
       rel = candidate.relative_to(root)
       rel_posix = rel.as_posix()
@@ -249,10 +248,6 @@ def discover_files(root: Path, config: dict[str, Any]) -> list[Path]:
         continue
       files.append(rel)
   return sorted(set(files))
-
-
-def parse_srcset(value: str) -> list[str]:
-  return [item.strip().split()[0] for item in value.split(',') if item.strip().split()]
 
 
 def line_for(token: Token, fallback: int = 1) -> int:
@@ -287,14 +282,6 @@ def html_links(source: Path, text: str, base_line: int = 1) -> list[Link]:
   return parser.links
 
 
-def bare_html_links(source: Path, text: str) -> list[Link]:
-  links: list[Link] = []
-  for line_no, line in enumerate(text.splitlines(), start=1):
-    for match in BARE_URL_RE.finditer(line):
-      links.append(Link(source, line_no, match.start() + 1, trim_bare_url(match.group(0)), 'bare-url'))
-  return links
-
-
 def trim_bare_url(raw: str) -> str:
   url = raw.rstrip('.,;:')
   while url.endswith(')') and url.count('(') < url.count(')'):
@@ -302,6 +289,15 @@ def trim_bare_url(raw: str) -> str:
   while url.endswith(']') and url.count('[') < url.count(']'):
     url = url[:-1]
   return html.unescape(url)
+
+
+def bare_html_links(source: Path, text: str) -> list[Link]:
+  links: list[Link] = []
+  for line_no, line in enumerate(text.splitlines(), start=1):
+    for match in BARE_URL_RE.finditer(line):
+      links.append(Link(source, line_no, match.start() + 1,
+                   trim_bare_url(match.group(0)), 'bare-url'))
+  return links
 
 
 def extract_markdown_links(root: Path, source: Path) -> list[Link]:
@@ -322,11 +318,13 @@ def extract_markdown_links(root: Path, source: Path) -> list[Link]:
       elif child.type == 'link_open':
         url = child.attrGet('href')
         if url:
-          links.append(Link(source, child_line, column_for(lines, child_line, url), html.unescape(url), 'markdown'))
+          links.append(Link(source, child_line, column_for(
+              lines, child_line, url), html.unescape(url), 'markdown'))
       elif child.type == 'image':
         url = child.attrGet('src')
         if url:
-          links.append(Link(source, child_line, column_for(lines, child_line, url), html.unescape(url), 'markdown-image'))
+          links.append(Link(source, child_line, column_for(
+              lines, child_line, url), html.unescape(url), 'markdown-image'))
   return dedupe_links(links)
 
 
@@ -364,6 +362,31 @@ def inline_text(token: Token) -> str:
   return ''.join(child.content for child in token.children if child.type in {'code_inline', 'text', 'image'})
 
 
+def expand_anchor_forms(values: set[str]) -> set[str]:
+  result: set[str] = set()
+  for value in values:
+    if not value:
+      continue
+    decoded = unquote(unicodedata.normalize('NFC', value))
+    result.update({value, decoded, decoded.lower(),
+                  quote(decoded, safe='-_.~')})
+  return result
+
+
+def anchor_forms(text: str) -> set[str]:
+  normalized = unicodedata.normalize('NFC', html.unescape(text).strip())
+  lower = normalized.lower()
+  hyphenated = re.sub(r'\s+', '-', lower)
+  compact = re.sub(r'[^\w\u0080-\uffff\s-]', '', lower)
+  return expand_anchor_forms({normalized, lower, hyphenated, re.sub(r'\s+', '-', compact)})
+
+
+def parse_html_anchors(text: str) -> set[str]:
+  parser = AnchorHtmlParser()
+  parser.feed(text)
+  return parser.anchors
+
+
 def collect_local_anchors(path: Path) -> set[str]:
   text = path.read_text(encoding='utf-8')
   anchors: set[str] = set()
@@ -378,30 +401,6 @@ def collect_local_anchors(path: Path) -> set[str]:
   return expand_anchor_forms(anchors)
 
 
-def parse_html_anchors(text: str) -> set[str]:
-  parser = AnchorHtmlParser()
-  parser.feed(text)
-  return parser.anchors
-
-
-def anchor_forms(text: str) -> set[str]:
-  normalized = unicodedata.normalize('NFC', html.unescape(text).strip())
-  lower = normalized.lower()
-  hyphenated = re.sub(r'\s+', '-', lower)
-  compact = re.sub(r'[^\w\u0080-\uffff\s-]', '', lower)
-  return expand_anchor_forms({normalized, lower, hyphenated, re.sub(r'\s+', '-', compact)})
-
-
-def expand_anchor_forms(values: set[str]) -> set[str]:
-  result: set[str] = set()
-  for value in values:
-    if not value:
-      continue
-    decoded = unquote(unicodedata.normalize('NFC', value))
-    result.update({value, decoded, decoded.lower(), quote(decoded, safe='-_.~')})
-  return result
-
-
 def first_value(values: list[str] | None) -> str | None:
   return values[0] if values else None
 
@@ -412,7 +411,9 @@ def docsify_candidates(root: Path, docs_root: Path, source: Path, raw_url: str) 
   path = unquote(parsed.path)
   if not path:
     return [root / source], anchor
-  base = docs_root / path.lstrip('/') if path.startswith('/') else (root / source).parent / path
+  base = docs_root / \
+      path.lstrip('/') if path.startswith('/') else (root /
+                                                     source).parent / path
   base = Path(os.path.normpath(base))
   if path.endswith('/'):
     return [base / 'README.md', base / 'index.html'], anchor
@@ -422,10 +423,13 @@ def docsify_candidates(root: Path, docs_root: Path, source: Path, raw_url: str) 
 
 
 def check_local_link(root: Path, docs_root: Path, link: Link) -> Issue | None:
-  candidates, anchor = docsify_candidates(root, docs_root, link.source, link.url)
-  target = next((candidate for candidate in candidates if candidate.exists()), None)
+  candidates, anchor = docsify_candidates(
+      root, docs_root, link.source, link.url)
+  target = next(
+      (candidate for candidate in candidates if candidate.exists()), None)
   if target is None:
-    tried = ', '.join(candidate.relative_to(root).as_posix() for candidate in candidates)
+    tried = ', '.join(candidate.relative_to(root).as_posix()
+                      for candidate in candidates)
     return Issue(link, 'local-missing-target', f'target does not exist; tried {tried}')
   if anchor and collect_local_anchors(target).isdisjoint(expand_anchor_forms({anchor})):
     rel_target = target.relative_to(root).as_posix()
@@ -453,10 +457,10 @@ async def request_once(client: httpx.AsyncClient, url: str, method: str, http_co
           body = body[:max_bytes]
           break
     return RemoteResponse(
-      response.status_code,
-      response.headers.get('content-type', ''),
-      body,
-      str(response.url),
+        response.status_code,
+        response.headers.get('content-type', ''),
+        body,
+        str(response.url),
     )
 
 
@@ -474,37 +478,18 @@ async def request_with_retries(client: httpx.AsyncClient, url: str, method: str,
   raise last_error
 
 
-async def check_remote_link(client: httpx.AsyncClient, url: str, http_config: dict[str, Any]) -> RemoteResult:
-  normalized = normalize_remote_url(url)
-  base_url, fragment = urldefrag(normalized)
-  needs_fragment = bool(fragment) and bool(http_config.get('check_fragments', True))
-  try:
-    head = await request_with_retries(client, base_url, 'HEAD', http_config, False)
-  except httpx.HTTPError:
-    return await check_remote_by_get(client, base_url, fragment, http_config, needs_fragment)
-  if needs_fragment or not status_is_accepted(head.status, http_config):
-    try:
-      get = await request_with_retries(client, base_url, 'GET', http_config, needs_fragment)
-      return evaluate_remote_response(fragment, get, http_config, needs_fragment)
-    except httpx.HTTPError as error:
-      if status_is_accepted(head.status, http_config):
-        return RemoteResult(True, 'HEAD succeeded; fragment could not be verified', head.status)
-      return RemoteResult(False, f'request failed after HTTP {head.status}: {format_error(error)}', head.status)
-  return evaluate_remote_response(fragment, head, http_config, False)
+def is_html_content(content_type: str, url: str) -> bool:
+  lowered = content_type.lower()
+  return 'text/html' in lowered or 'application/xhtml+xml' in lowered or urlparse(url).path.endswith(('.html', '.htm', '/'))
 
 
-async def check_remote_by_get(
-    client: httpx.AsyncClient,
-    base_url: str,
-    fragment: str,
-    http_config: dict[str, Any],
-    needs_fragment: bool,
-) -> RemoteResult:
-  try:
-    response = await request_with_retries(client, base_url, 'GET', http_config, needs_fragment)
-    return evaluate_remote_response(fragment, response, http_config, needs_fragment)
-  except httpx.HTTPError as error:
-    return RemoteResult(False, f'request failed: {format_error(error)}')
+def parse_remote_anchors(response: RemoteResponse) -> set[str]:
+  charset = 'utf-8'
+  match = re.search(r'charset=([^;\s]+)',
+                    response.content_type, flags=re.IGNORECASE)
+  if match:
+    charset = match.group(1).strip('"\'')
+  return expand_anchor_forms(parse_html_anchors(response.body.decode(charset, errors='ignore')))
 
 
 def evaluate_remote_response(fragment: str, response: RemoteResponse, http_config: dict[str, Any], needs_fragment: bool) -> RemoteResult:
@@ -521,31 +506,53 @@ def evaluate_remote_response(fragment: str, response: RemoteResponse, http_confi
   return RemoteResult(True, 'ok', response.status)
 
 
-def is_html_content(content_type: str, url: str) -> bool:
-  lowered = content_type.lower()
-  return 'text/html' in lowered or 'application/xhtml+xml' in lowered or urlparse(url).path.endswith(('.html', '.htm', '/'))
-
-
-def parse_remote_anchors(response: RemoteResponse) -> set[str]:
-  charset = 'utf-8'
-  match = re.search(r'charset=([^;\s]+)', response.content_type, flags=re.IGNORECASE)
-  if match:
-    charset = match.group(1).strip('"\'')
-  return expand_anchor_forms(parse_html_anchors(response.body.decode(charset, errors='ignore')))
-
-
 def format_error(error: Exception) -> str:
   return str(error) or error.__class__.__name__
+
+
+async def check_remote_by_get(
+    client: httpx.AsyncClient,
+    base_url: str,
+    fragment: str,
+    http_config: dict[str, Any],
+    needs_fragment: bool,
+) -> RemoteResult:
+  try:
+    response = await request_with_retries(client, base_url, 'GET', http_config, needs_fragment)
+    return evaluate_remote_response(fragment, response, http_config, needs_fragment)
+  except httpx.HTTPError as error:
+    return RemoteResult(False, f'request failed: {format_error(error)}')
+
+
+async def check_remote_link(client: httpx.AsyncClient, url: str, http_config: dict[str, Any]) -> RemoteResult:
+  normalized = normalize_remote_url(url)
+  base_url, fragment = urldefrag(normalized)
+  needs_fragment = bool(fragment) and bool(
+      http_config.get('check_fragments', True))
+  try:
+    head = await request_with_retries(client, base_url, 'HEAD', http_config, False)
+  except httpx.HTTPError:
+    return await check_remote_by_get(client, base_url, fragment, http_config, needs_fragment)
+  if needs_fragment or not status_is_accepted(head.status, http_config):
+    try:
+      get = await request_with_retries(client, base_url, 'GET', http_config, needs_fragment)
+      return evaluate_remote_response(fragment, get, http_config, needs_fragment)
+    except httpx.HTTPError as error:
+      if status_is_accepted(head.status, http_config):
+        return RemoteResult(True, 'HEAD succeeded; fragment could not be verified', head.status)
+      return RemoteResult(False, f'request failed after HTTP {head.status}: {format_error(error)}', head.status)
+  return evaluate_remote_response(fragment, head, http_config, False)
 
 
 async def check_remote_links(remote_links: dict[str, list[Link]], http_config: dict[str, Any]) -> list[Issue]:
   concurrency = int(http_config.get('workers', 8))
   timeout = httpx.Timeout(float(http_config.get('timeout', 15)))
   headers = {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'User-Agent': str(http_config.get('user_agent', DEFAULT_CONFIG['http']['user_agent'])),
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'User-Agent': str(http_config.get('user_agent', DEFAULT_CONFIG['http']['user_agent'])),
   }
-  limits = httpx.Limits(max_connections=concurrency, max_keepalive_connections=concurrency)
+  limits = httpx.Limits(max_connections=concurrency,
+                        max_keepalive_connections=concurrency)
   semaphore = asyncio.Semaphore(concurrency)
 
   async with httpx.AsyncClient(follow_redirects=True, timeout=timeout, headers=headers, limits=limits) as client:
@@ -588,20 +595,22 @@ def check_links(root: Path, config: dict[str, Any], no_http: bool) -> tuple[list
       if not no_http:
         remote_links.setdefault(normalize_remote_url(url), []).append(link)
       continue
-    issue = check_local_link(root, docs_root, dataclasses.replace(link, url=url))
+    issue = check_local_link(
+        root, docs_root, dataclasses.replace(link, url=url))
     if issue is not None:
       issues.append(issue)
 
   if remote_links and not no_http:
-    issues.extend(asyncio.run(check_remote_links(remote_links, config['http'])))
+    issues.extend(asyncio.run(
+        check_remote_links(remote_links, config['http'])))
 
   issues = filter_ignored_issues(issues, ignore_rules)
   stats = {
-    'files': len(files),
-    'links': len(links),
-    'remote_links': sum(len(items) for items in remote_links.values()),
-    'unique_remote_links': len(remote_links),
-    'issues': len(issues),
+      'files': len(files),
+      'links': len(links),
+      'remote_links': sum(len(items) for items in remote_links.values()),
+      'unique_remote_links': len(remote_links),
+      'issues': len(issues),
   }
   return sorted(issues, key=lambda issue: (issue.link.source.as_posix(), issue.link.line, issue.link.url)), stats
 
@@ -618,18 +627,30 @@ def print_issues(issues: list[Issue]) -> None:
 
 
 def main() -> int:
-  args = parse_args()
+  parser = argparse.ArgumentParser(
+      description='Check links in the documentation.')
+  parser.add_argument('--config', default='check-links.toml',
+                      help='TOML configuration file.')
+  parser.add_argument('--root', default='.',
+                      help='Repository root. Defaults to the current directory.')
+  parser.add_argument('--no-http', action='store_true',
+                      help='Skip remote HTTP(S) checks.')
+  parser.add_argument('--verbose', action='store_true',
+                      help='Print checked link counts.')
+  args = parser.parse_args()
+
   root = Path(args.root).resolve()
   try:
-    issues, stats = check_links(root, load_config(root, args.config), args.no_http)
+    issues, stats = check_links(
+        root, load_config(root, args.config), args.no_http)
   except ValueError as error:
     print(f'Configuration error: {error}', file=sys.stderr)
     return 2
   print_issues(issues)
   if args.verbose:
     print(
-      'Checked {files} file(s), {links} link(s), {remote_links} remote occurrence(s) '
-      '({unique_remote_links} unique).'.format(**stats)
+        'Checked {files} file(s), {links} link(s), {remote_links} remote occurrence(s) '
+        '({unique_remote_links} unique).'.format(**stats)
     )
   return 1 if issues else 0
 
