@@ -16,7 +16,6 @@ that the referenced `id` or `name` anchor exists.
 
 import argparse
 import asyncio
-import dataclasses
 import fnmatch
 import html
 import html.parser
@@ -25,6 +24,7 @@ import re
 import sys
 import tomllib
 import unicodedata
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, quote, unquote, urldefrag, urlparse
@@ -71,16 +71,30 @@ MARKDOWN = MarkdownIt(
     'commonmark', {'html': True, 'linkify': True}).enable('linkify')
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclass(frozen=True)
 class Link:
   source: Path
   line: int
   column: int
   url: str
-  kind: str
+
+  def __post_init__(self) -> None:
+    object.__setattr__(self, 'url', html.unescape(self.url.strip()))
+
+  @property
+  def normalized_url(self) -> str:
+    return f'https:{self.url}' if self.url.startswith('//') else self.url
+
+  @property
+  def is_remote(self) -> bool:
+    return self.url.startswith(('http://', 'https://', '//'))
+
+  @property
+  def should_skip(self) -> bool:
+    return not self.url or urlparse(self.url).scheme.lower() in SKIPPED_SCHEMES
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclass(frozen=True)
 class Issue:
   link: Link
   category: str
@@ -88,7 +102,7 @@ class Issue:
   status: int | None = None
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclass(frozen=True)
 class RemoteResponse:
   status: int
   content_type: str
@@ -96,14 +110,14 @@ class RemoteResponse:
   final_url: str
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclass(frozen=True)
 class RemoteResult:
   ok: bool
   message: str
   status: int | None = None
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclass(frozen=True)
 class IgnoreRule:
   reason: str = ''
   url: str | None = None
@@ -117,11 +131,10 @@ class IgnoreRule:
 
   def matches(self, link: Link, issue: Issue | None = None) -> bool:
     rel_path = link.source.as_posix()
-    if self.url is not None and link.url != self.url and normalize_remote_url(link.url) != self.url:
+    if self.url is not None and link.url != self.url and link.normalized_url != self.url:
       return False
     if self.url_regex is not None:
-      normalized = normalize_remote_url(link.url)
-      if not re.search(self.url_regex, link.url) and not re.search(self.url_regex, normalized):
+      if not re.search(self.url_regex, link.url) and not re.search(self.url_regex, link.normalized_url):
         return False
     if self.path is not None and rel_path != self.path:
       return False
@@ -170,10 +183,9 @@ class LinkHtmlParser(html.parser.HTMLParser):
     for attr, value in attrs:
       if value is None or attr.lower() not in wanted:
         continue
-      kind = f'html-{attr.lower()}'
       for url in self.parse_srcset(value) if attr.lower() == 'srcset' else [value]:
         self.links.append(Link(self.source, self.base_line +
-                          line - 1, column + 1, url, kind))
+                               line - 1, column + 1, url))
 
 
 class AnchorHtmlParser(html.parser.HTMLParser):
@@ -239,8 +251,8 @@ def discover_files(root: Path, config: dict[str, Any]) -> list[Path]:
   files: list[Path] = []
   for raw_path in scan.get('paths', []):
     path = root / raw_path
-    candidates = [path] if path.is_file(
-    ) else [candidate for candidate in path.rglob('*') if candidate.is_file()]
+    candidates = [path] if path.is_file() \
+        else [candidate for candidate in path.rglob('*') if candidate.is_file()]
     for candidate in candidates:
       rel = candidate.relative_to(root)
       rel_posix = rel.as_posix()
@@ -256,11 +268,11 @@ def line_for(token: Token, fallback: int = 1) -> int:
   return token.map[0] + 1 if token.map else fallback
 
 
-def column_for(lines: list[str], line: int, needle: str) -> int:
+def column_for(lines: list[str], line: int, url: str) -> int:
   if line < 1 or line > len(lines):
     return 1
-  decoded = html.unescape(needle)
-  index = lines[line - 1].find(needle)
+  decoded = html.unescape(url)
+  index = lines[line - 1].find(url)
   if index == -1:
     index = lines[line - 1].find(decoded)
   return index + 1 if index >= 0 else 1
@@ -290,7 +302,7 @@ def trim_bare_url(raw: str) -> str:
     url = url[:-1]
   while url.endswith(']') and url.count('[') < url.count(']'):
     url = url[:-1]
-  return html.unescape(url)
+  return url
 
 
 def bare_html_links(source: Path, text: str) -> list[Link]:
@@ -298,7 +310,7 @@ def bare_html_links(source: Path, text: str) -> list[Link]:
   for line_no, line in enumerate(text.splitlines(), start=1):
     for match in BARE_URL_RE.finditer(line):
       links.append(Link(source, line_no, match.start() + 1,
-                   trim_bare_url(match.group(0)), 'bare-url'))
+                        trim_bare_url(match.group(0))))
   return links
 
 
@@ -320,13 +332,13 @@ def extract_markdown_links(root: Path, source: Path) -> list[Link]:
       elif child.type == 'link_open':
         url = child.attrGet('href')
         if url:
-          links.append(Link(source, child_line, column_for(
-              lines, child_line, url), html.unescape(url), 'markdown'))
+          links.append(Link(source, child_line,
+                            column_for(lines, child_line, url), url))
       elif child.type == 'image':
         url = child.attrGet('src')
         if url:
-          links.append(Link(source, child_line, column_for(
-              lines, child_line, url), html.unescape(url), 'markdown-image'))
+          links.append(Link(source, child_line,
+                            column_for(lines, child_line, url), url))
   return dedupe_links(links)
 
 
@@ -343,19 +355,6 @@ def extract_links(root: Path, files: list[Path]) -> list[Link]:
     elif source.suffix == '.html':
       links.extend(extract_html_links(root, source))
   return links
-
-
-def normalize_remote_url(url: str) -> str:
-  stripped = url.strip()
-  return 'https:' + stripped if stripped.startswith('//') else stripped
-
-
-def has_skipped_scheme(url: str) -> bool:
-  return urlparse(url).scheme.lower() in SKIPPED_SCHEMES
-
-
-def is_remote_url(url: str) -> bool:
-  return normalize_remote_url(url).startswith(('http://', 'https://'))
 
 
 def inline_text(token: Token) -> str:
@@ -527,8 +526,7 @@ async def check_remote_by_get(
 
 
 async def check_remote_link(client: httpx.AsyncClient, url: str, http_config: dict[str, Any]) -> RemoteResult:
-  normalized = normalize_remote_url(url)
-  base_url, fragment = urldefrag(normalized)
+  base_url, fragment = urldefrag(url)
   needs_fragment = bool(fragment) and bool(
       http_config.get('check_fragments', True))
   try:
@@ -602,17 +600,15 @@ def check_links(root: Path, config: dict[str, Any], no_http: bool, verbose: bool
   remote_links: dict[str, list[Link]] = {}
 
   for link in links:
-    url = html.unescape(link.url.strip())
-    if not url or has_skipped_scheme(url):
+    if link.should_skip:
       continue
-    if is_remote_url(url):
+    if link.is_remote:
       if not no_http:
-        remote_links.setdefault(normalize_remote_url(url), []).append(link)
+        remote_links.setdefault(link.normalized_url, []).append(link)
       continue
     if verbose:
-      print(f'Checking local link: {url}... ', end='', flush=True)
-    issue = check_local_link(root, docs_root,
-                             dataclasses.replace(link, url=url))
+      print(f'Checking local link: {link.url}... ', end='', flush=True)
+    issue = check_local_link(root, docs_root, link)
     if issue is not None:
       issues.append(issue)
     if verbose:
