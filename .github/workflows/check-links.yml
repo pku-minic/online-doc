@@ -1,0 +1,32 @@
+name: Check links
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "docs/**"
+      - "scripts/check_links.py"
+      - "requirements.txt"
+      - "check-links.toml"
+      - ".github/workflows/check-links.yml"
+  push:
+    branches:
+      - master
+    paths:
+      - "README.md"
+      - "docs/**"
+      - "scripts/check_links.py"
+      - "requirements.txt"
+      - "check-links.toml"
+      - ".github/workflows/check-links.yml"
+  workflow_dispatch:
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Check documentation links
+        run: python scripts/check_links.py --config check-links.toml --verbose
