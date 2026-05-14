@@ -37,7 +37,8 @@ from markdown_it.token import Token
 DEFAULT_CONFIG: dict[str, Any] = {
     'scan': {
         'paths': ['README.md', 'docs'],
-        'extensions': ['.md', '.html'],
+        'md_extensions': ['.md'],
+        'html_extensions': ['.html'],
         'exclude': ['docs/assets/**'],
         'docs_root': 'docs',
     },
@@ -56,23 +57,23 @@ DEFAULT_CONFIG: dict[str, Any] = {
 
 BARE_URL_RE = re.compile(r'(?:(?:https?:)?//)[^\s<>\'"]+')
 HTML_ID_RE = re.compile(r'\s(?:id|name)\s*=\s*([\'"])(.*?)\1', re.IGNORECASE)
-SKIPPED_SCHEMES = {
-    'data',
-    'file',
-    'ftp',
-    'irc',
-    'ircs',
-    'javascript',
-    'mailto',
-    'tel',
-}
-
 MARKDOWN = MarkdownIt(
     'commonmark', {'html': True, 'linkify': True}).enable('linkify')
 
 
 @dataclass(frozen=True)
 class Link:
+  SKIPPED_SCHEMES = {
+      'data',
+      'file',
+      'ftp',
+      'irc',
+      'ircs',
+      'javascript',
+      'mailto',
+      'tel',
+  }
+
   source: Path
   line: int
   column: int
@@ -91,7 +92,7 @@ class Link:
 
   @property
   def should_skip(self) -> bool:
-    return not self.url or urlparse(self.url).scheme.lower() in SKIPPED_SCHEMES
+    return not self.url or urlparse(self.url).scheme.lower() in self.SKIPPED_SCHEMES
 
 
 @dataclass(frozen=True)
@@ -115,6 +116,21 @@ class RemoteResult:
   ok: bool
   message: str
   status: int | None = None
+
+
+@dataclass(frozen=True)
+class FileTypes:
+  markdown: set[str]
+  html: set[str]
+
+  def is_markdown(self, path: Path) -> bool:
+    return path.suffix in self.markdown
+
+  def is_html(self, path: Path) -> bool:
+    return path.suffix in self.html
+
+  def is_candidate(self, path: Path) -> bool:
+    return self.is_markdown(path) or self.is_html(path)
 
 
 @dataclass(frozen=True)
@@ -171,10 +187,6 @@ class LinkHtmlParser(html.parser.HTMLParser):
     self.base_line = base_line
     self.links: list[Link] = []
 
-  @staticmethod
-  def parse_srcset(value: str) -> list[str]:
-    return [item.strip().split()[0] for item in value.split(',') if item.strip().split()]
-
   def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
     wanted = self.LINK_ATTRS.get(tag.lower())
     if not wanted:
@@ -183,7 +195,12 @@ class LinkHtmlParser(html.parser.HTMLParser):
     for attr, value in attrs:
       if value is None or attr.lower() not in wanted:
         continue
-      for url in self.parse_srcset(value) if attr.lower() == 'srcset' else [value]:
+      if attr.lower() == 'srcset':
+        urls = [item.strip().split()[0]
+                for item in value.split(',') if item.strip().split()]
+      else:
+        urls = [value]
+      for url in urls:
         self.links.append(Link(self.source, self.base_line +
                                line - 1, column + 1, url))
 
@@ -222,6 +239,21 @@ def load_config(root: Path, config_path: str | None) -> dict[str, Any]:
     return deep_merge(DEFAULT_CONFIG, tomllib.load(file))
 
 
+def normalize_extensions(raw_extensions: list[str]) -> set[str]:
+  return set(
+      extension if extension.startswith('.') else f'.{extension}'
+      for extension in raw_extensions
+  )
+
+
+def configured_file_types(config: dict[str, Any]) -> FileTypes:
+  scan: dict[str, Any] = config['scan']
+  return FileTypes(
+      markdown=normalize_extensions(scan.get('md_extensions', [])),
+      html=normalize_extensions(scan.get('html_extensions', [])),
+  )
+
+
 def load_ignore_rules(config: dict[str, Any]) -> list[IgnoreRule]:
   rules: list[IgnoreRule] = []
   for item in config.get('ignore', []):
@@ -244,9 +276,8 @@ def load_ignore_rules(config: dict[str, Any]) -> list[IgnoreRule]:
   return rules
 
 
-def discover_files(root: Path, config: dict[str, Any]) -> list[Path]:
+def discover_files(root: Path, config: dict[str, Any], file_types: FileTypes) -> list[Path]:
   scan: dict[str, Any] = config['scan']
-  extensions = set(scan.get('extensions', []))
   excludes = scan.get('exclude', [])
   files: list[Path] = []
   for raw_path in scan.get('paths', []):
@@ -256,7 +287,7 @@ def discover_files(root: Path, config: dict[str, Any]) -> list[Path]:
     for candidate in candidates:
       rel = candidate.relative_to(root)
       rel_posix = rel.as_posix()
-      if extensions and candidate.suffix not in extensions:
+      if not file_types.is_candidate(candidate):
         continue
       if any(fnmatch.fnmatch(rel_posix, pattern) for pattern in excludes):
         continue
@@ -347,12 +378,12 @@ def extract_html_links(root: Path, source: Path) -> list[Link]:
   return dedupe_links(html_links(source, text) + bare_html_links(source, text))
 
 
-def extract_links(root: Path, files: list[Path]) -> list[Link]:
+def extract_links(root: Path, files: list[Path], file_types: FileTypes) -> list[Link]:
   links: list[Link] = []
   for source in files:
-    if source.suffix == '.md':
+    if file_types.is_markdown(source):
       links.extend(extract_markdown_links(root, source))
-    elif source.suffix == '.html':
+    elif file_types.is_html(source):
       links.extend(extract_html_links(root, source))
   return links
 
@@ -388,12 +419,12 @@ def parse_html_anchors(text: str) -> set[str]:
   return parser.anchors
 
 
-def collect_local_anchors(path: Path) -> set[str]:
+def collect_local_anchors(path: Path, file_types: FileTypes) -> set[str]:
   text = path.read_text(encoding='utf-8')
   anchors: set[str] = set()
-  if path.suffix == '.html':
+  if file_types.is_html(path):
     anchors.update(parse_html_anchors(text))
-  else:
+  elif file_types.is_markdown(path):
     tokens = MARKDOWN.parse(text)
     for index, token in enumerate(tokens[:-1]):
       if token.type == 'heading_open' and tokens[index + 1].type == 'inline':
@@ -406,33 +437,59 @@ def first_value(values: list[str] | None) -> str | None:
   return values[0] if values else None
 
 
-def docsify_candidates(root: Path, docs_root: Path, source: Path, raw_url: str) -> tuple[list[Path], str | None]:
+def markdown_page_candidates(base: Path, file_types: FileTypes) -> list[Path]:
+  return [base.with_suffix(extension) for extension in file_types.markdown]
+
+
+def markdown_index_candidates(base: Path, file_types: FileTypes) -> list[Path]:
+  return [base / f'README{extension}' for extension in file_types.markdown]
+
+
+def html_page_candidates(base: Path, file_types: FileTypes) -> list[Path]:
+  return [base.with_suffix(extension) for extension in file_types.html]
+
+
+def html_index_candidates(base: Path, file_types: FileTypes) -> list[Path]:
+  return [base / f'index{extension}' for extension in file_types.html]
+
+
+def docsify_candidates(
+    root: Path,
+    docs_root: Path,
+    source: Path,
+    raw_url: str,
+    file_types: FileTypes,
+) -> tuple[list[Path], str | None]:
   parsed = urlparse(raw_url)
   anchor = parsed.fragment or first_value(parse_qs(parsed.query).get('id'))
   path = unquote(parsed.path)
   if not path:
     return [root / source], anchor
-  base = docs_root / \
-      path.lstrip('/') if path.startswith('/') else (root /
-                                                     source).parent / path
+  base = docs_root / path.lstrip('/') if path.startswith('/') \
+      else (root / source).parent / path
   base = Path(os.path.normpath(base))
   if path.endswith('/'):
-    return [base / 'README.md', base / 'index.html'], anchor
+    return markdown_index_candidates(base, file_types) + html_index_candidates(base, file_types), anchor
   if Path(path).suffix:
     return [base], anchor
-  return [base.with_suffix('.md'), base / 'README.md', base.with_suffix('.html')], anchor
+  return (
+      markdown_page_candidates(base, file_types)
+      + markdown_index_candidates(base, file_types)
+      + html_page_candidates(base, file_types)
+      + html_index_candidates(base, file_types)
+  ), anchor
 
 
-def check_local_link(root: Path, docs_root: Path, link: Link) -> Issue | None:
+def check_local_link(root: Path, docs_root: Path, link: Link, file_types: FileTypes) -> Issue | None:
   candidates, anchor = docsify_candidates(
-      root, docs_root, link.source, link.url)
+      root, docs_root, link.source, link.url, file_types)
   target = next(
       (candidate for candidate in candidates if candidate.exists()), None)
   if target is None:
     tried = ', '.join(candidate.relative_to(root).as_posix()
                       for candidate in candidates)
     return Issue(link, 'local-missing-target', f'target does not exist; tried {tried}')
-  if anchor and collect_local_anchors(target).isdisjoint(expand_anchor_forms({anchor})):
+  if anchor and collect_local_anchors(target, file_types).isdisjoint(expand_anchor_forms({anchor})):
     rel_target = target.relative_to(root).as_posix()
     return Issue(link, 'local-missing-anchor', f'anchor "{unquote(anchor)}" not found in {rel_target}')
   return None
@@ -563,7 +620,7 @@ async def check_remote_links(
     async def one(url: str) -> tuple[str, RemoteResult]:
       async with semaphore:
         if verbose:
-          print(f'Checking remote link: {url}...')
+          print(f'Checking remote link: {url} ...')
         result = await check_remote_link(client, url, http_config)
         if verbose and not result.ok:
           print(f'FAIL: {url}')
@@ -589,9 +646,11 @@ def filter_ignored_issues(issues: list[Issue], ignore_rules: list[IgnoreRule]) -
 
 
 def check_links(root: Path, config: dict[str, Any], no_http: bool, verbose: bool) -> tuple[list[Issue], dict[str, int]]:
-  files = discover_files(root, config)
+  file_types = configured_file_types(config)
+  files = discover_files(root, config, file_types)
   ignore_rules = load_ignore_rules(config)
-  links = filter_ignored_links(extract_links(root, files), ignore_rules)
+  links = filter_ignored_links(extract_links(
+      root, files, file_types), ignore_rules)
   if verbose:
     print(f'Scanning {len(links)} link(s)...')
 
@@ -607,8 +666,8 @@ def check_links(root: Path, config: dict[str, Any], no_http: bool, verbose: bool
         remote_links.setdefault(link.normalized_url, []).append(link)
       continue
     if verbose:
-      print(f'Checking local link: {link.url}... ', end='', flush=True)
-    issue = check_local_link(root, docs_root, link)
+      print(f'Checking local link: {link.url} ... ', end='', flush=True)
+    issue = check_local_link(root, docs_root, link, file_types)
     if issue is not None:
       issues.append(issue)
     if verbose:
