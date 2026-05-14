@@ -1,0 +1,23 @@
+[scan]
+paths = ["README.md", "docs"]
+md_extensions = [".md"]
+html_extensions = [".html"]
+exclude = ["docs/assets/**"]
+docs_root = "docs"
+
+[http]
+timeout = 15
+retries = 1
+workers = 16
+user_agent = "pku-minic-online-doc-link-checker/1.0"
+accepted_statuses = [401, 403, 429]
+accepted_status_ranges = [[200, 399]]
+check_fragments = true
+max_fragment_page_bytes = 2000000
+
+# Ignore rules are conjunctive: when several fields are present, all of them
+# must match. Supported match fields: url, url_regex, path, path_glob, line,
+# category, status, and statuses.
+[[ignore]]
+url = "https://github.com/pku-minic/kira-cpp"
+reason = "The document explicitly says this example repository is not finished and a 404 is expected."
