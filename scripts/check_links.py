@@ -18,7 +18,6 @@ import argparse
 import asyncio
 import fnmatch
 import html
-import html.parser
 import os
 import re
 import sys
@@ -32,6 +31,7 @@ from urllib.parse import parse_qs, quote, unquote, urldefrag, urlparse
 import httpx
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
+from selectolax.parser import HTMLParser
 
 
 DEFAULT_CONFIG: dict[str, Any] = {
@@ -56,9 +56,23 @@ DEFAULT_CONFIG: dict[str, Any] = {
 }
 
 BARE_URL_RE = re.compile(r'(?:(?:https?:)?//)[^\s<>\'"]+')
-HTML_ID_RE = re.compile(r'\s(?:id|name)\s*=\s*([\'"])(.*?)\1', re.IGNORECASE)
 MARKDOWN = MarkdownIt(
     'commonmark', {'html': True, 'linkify': True}).enable('linkify')
+HTML_LINK_ATTRS = {
+    'a': ('href',),
+    'area': ('href',),
+    'iframe': ('src',),
+    'img': ('src', 'srcset'),
+    'link': ('href',),
+    'script': ('src',),
+    'source': ('src', 'srcset'),
+    'video': ('poster', 'src'),
+}
+HTML_LINK_SELECTOR = ', '.join(
+    f'{tag}[{attr}]'
+    for tag, attrs in HTML_LINK_ATTRS.items()
+    for attr in attrs
+)
 
 
 @dataclass(frozen=True)
@@ -169,53 +183,6 @@ class IgnoreRule:
     return True
 
 
-class LinkHtmlParser(html.parser.HTMLParser):
-  LINK_ATTRS = {
-      'a': {'href'},
-      'area': {'href'},
-      'iframe': {'src'},
-      'img': {'src', 'srcset'},
-      'link': {'href'},
-      'script': {'src'},
-      'source': {'src', 'srcset'},
-      'video': {'poster', 'src'},
-  }
-
-  def __init__(self, source: Path, base_line: int = 1) -> None:
-    super().__init__(convert_charrefs=True)
-    self.source = source
-    self.base_line = base_line
-    self.links: list[Link] = []
-
-  def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-    wanted = self.LINK_ATTRS.get(tag.lower())
-    if not wanted:
-      return
-    line, column = self.getpos()
-    for attr, value in attrs:
-      if value is None or attr.lower() not in wanted:
-        continue
-      if attr.lower() == 'srcset':
-        urls = [item.strip().split()[0]
-                for item in value.split(',') if item.strip().split()]
-      else:
-        urls = [value]
-      for url in urls:
-        self.links.append(Link(self.source, self.base_line +
-                               line - 1, column + 1, url))
-
-
-class AnchorHtmlParser(html.parser.HTMLParser):
-  def __init__(self) -> None:
-    super().__init__(convert_charrefs=True)
-    self.anchors: set[str] = set()
-
-  def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-    for attr, value in attrs:
-      if attr.lower() in {'id', 'name'} and value:
-        self.anchors.add(value)
-
-
 def deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
   merged = {key: value.copy() if isinstance(value, dict)
             else value for key, value in base.items()}
@@ -321,10 +288,48 @@ def dedupe_links(links: list[Link]) -> list[Link]:
   return result
 
 
+def parse_srcset(value: str) -> list[str]:
+  return [item.strip().split()[0] for item in value.split(',') if item.strip().split()]
+
+
+def line_column_at(text: str, offset: int, base_line: int = 1) -> tuple[int, int]:
+  prefix = text[:max(offset, 0)]
+  line = base_line + prefix.count('\n')
+  column = len(prefix.rsplit('\n', 1)[-1]) + 1
+  return line, column
+
+
+def find_html_node(text: str, node_html: str, cursor: int) -> int:
+  if node_html:
+    offset = text.find(node_html, cursor)
+    if offset != -1:
+      return offset
+  return cursor
+
+
+def find_html_value(text: str, node_start: int, value: str) -> int:
+  offset = text.find(value, node_start)
+  if offset == -1:
+    offset = text.find(html.unescape(value), node_start)
+  return offset if offset != -1 else node_start
+
+
 def html_links(source: Path, text: str, base_line: int = 1) -> list[Link]:
-  parser = LinkHtmlParser(source, base_line)
-  parser.feed(text)
-  return parser.links
+  links: list[Link] = []
+  cursor = 0
+  for node in HTMLParser(text).css(HTML_LINK_SELECTOR):
+    attrs = HTML_LINK_ATTRS.get(node.tag, ())
+    node_start = find_html_node(text, node.html, cursor)
+    cursor = max(cursor, node_start + 1)
+    for attr in attrs:
+      value = node.attributes.get(attr)
+      if value is None:
+        continue
+      for url in parse_srcset(value) if attr == 'srcset' else [value]:
+        line, column = line_column_at(
+            text, find_html_value(text, node_start, url), base_line)
+        links.append(Link(source, line, column, url))
+  return links
 
 
 def trim_bare_url(raw: str) -> str:
@@ -414,9 +419,13 @@ def anchor_forms(text: str) -> set[str]:
 
 
 def parse_html_anchors(text: str) -> set[str]:
-  parser = AnchorHtmlParser()
-  parser.feed(text)
-  return parser.anchors
+  anchors: set[str] = set()
+  for node in HTMLParser(text).css('[id], [name]'):
+    for attr in ('id', 'name'):
+      value = node.attributes.get(attr)
+      if value:
+        anchors.add(value)
+  return anchors
 
 
 def collect_local_anchors(path: Path, file_types: FileTypes) -> set[str]:
@@ -429,7 +438,7 @@ def collect_local_anchors(path: Path, file_types: FileTypes) -> set[str]:
     for index, token in enumerate(tokens[:-1]):
       if token.type == 'heading_open' and tokens[index + 1].type == 'inline':
         anchors.update(anchor_forms(inline_text(tokens[index + 1])))
-    anchors.update(match.group(2) for match in HTML_ID_RE.finditer(text))
+    anchors.update(parse_html_anchors(text))
   return expand_anchor_forms(anchors)
 
 
