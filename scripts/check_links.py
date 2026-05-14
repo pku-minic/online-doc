@@ -198,12 +198,14 @@ def deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]
   return merged
 
 
-def load_config(root: Path, config_path: str) -> dict[str, Any]:
+def load_config(root: Path, config_path: str | None) -> dict[str, Any]:
+  if config_path is None:
+    return DEFAULT_CONFIG
   path = Path(config_path)
   if not path.is_absolute():
     path = root / path
   if not path.exists():
-    return DEFAULT_CONFIG
+    raise ValueError(f'configuration file not found: {path}')
   with path.open('rb') as file:
     return deep_merge(DEFAULT_CONFIG, tomllib.load(file))
 
@@ -212,7 +214,7 @@ def load_ignore_rules(config: dict[str, Any]) -> list[IgnoreRule]:
   rules: list[IgnoreRule] = []
   for item in config.get('ignore', []):
     if not isinstance(item, dict):
-      raise ValueError('Each [[ignore]] entry must be a TOML table.')
+      raise ValueError('each [[ignore]] entry must be a TOML table.')
     statuses = item.get('statuses', ())
     if isinstance(statuses, list):
       statuses = tuple(int(status) for status in statuses)
@@ -231,7 +233,7 @@ def load_ignore_rules(config: dict[str, Any]) -> list[IgnoreRule]:
 
 
 def discover_files(root: Path, config: dict[str, Any]) -> list[Path]:
-  scan = config['scan']
+  scan: dict[str, Any] = config['scan']
   extensions = set(scan.get('extensions', []))
   excludes = scan.get('exclude', [])
   files: list[Path] = []
@@ -544,7 +546,11 @@ async def check_remote_link(client: httpx.AsyncClient, url: str, http_config: di
   return evaluate_remote_response(fragment, head, http_config, False)
 
 
-async def check_remote_links(remote_links: dict[str, list[Link]], http_config: dict[str, Any]) -> list[Issue]:
+async def check_remote_links(
+    remote_links: dict[str, list[Link]],
+    http_config: dict[str, Any],
+    verbose: bool,
+) -> list[Issue]:
   concurrency = int(http_config.get('workers', 8))
   timeout = httpx.Timeout(float(http_config.get('timeout', 15)))
   headers = {
@@ -558,7 +564,12 @@ async def check_remote_links(remote_links: dict[str, list[Link]], http_config: d
   async with httpx.AsyncClient(follow_redirects=True, timeout=timeout, headers=headers, limits=limits) as client:
     async def one(url: str) -> tuple[str, RemoteResult]:
       async with semaphore:
-        return url, await check_remote_link(client, url, http_config)
+        if verbose:
+          print(f'Checking remote link: {url}...')
+        result = await check_remote_link(client, url, http_config)
+        if verbose and not result.ok:
+          print(f'FAIL: {url}')
+        return url, result
 
     results = await asyncio.gather(*(one(url) for url in sorted(remote_links)))
 
@@ -579,10 +590,13 @@ def filter_ignored_issues(issues: list[Issue], ignore_rules: list[IgnoreRule]) -
   return [issue for issue in issues if not any(rule.matches(issue.link, issue) for rule in ignore_rules)]
 
 
-def check_links(root: Path, config: dict[str, Any], no_http: bool) -> tuple[list[Issue], dict[str, int]]:
+def check_links(root: Path, config: dict[str, Any], no_http: bool, verbose: bool) -> tuple[list[Issue], dict[str, int]]:
   files = discover_files(root, config)
   ignore_rules = load_ignore_rules(config)
   links = filter_ignored_links(extract_links(root, files), ignore_rules)
+  if verbose:
+    print(f'Scanning {len(links)} link(s)...')
+
   docs_root = root / config['scan'].get('docs_root', 'docs')
   issues: list[Issue] = []
   remote_links: dict[str, list[Link]] = {}
@@ -595,14 +609,18 @@ def check_links(root: Path, config: dict[str, Any], no_http: bool) -> tuple[list
       if not no_http:
         remote_links.setdefault(normalize_remote_url(url), []).append(link)
       continue
-    issue = check_local_link(
-        root, docs_root, dataclasses.replace(link, url=url))
+    if verbose:
+      print(f'Checking local link: {url}... ', end='', flush=True)
+    issue = check_local_link(root, docs_root,
+                             dataclasses.replace(link, url=url))
     if issue is not None:
       issues.append(issue)
+    if verbose:
+      print('PASS' if issue is None else 'FAIL')
 
   if remote_links and not no_http:
     issues.extend(asyncio.run(
-        check_remote_links(remote_links, config['http'])))
+        check_remote_links(remote_links, config['http'], verbose)))
 
   issues = filter_ignored_issues(issues, ignore_rules)
   stats = {
@@ -629,7 +647,7 @@ def print_issues(issues: list[Issue]) -> None:
 def main() -> int:
   parser = argparse.ArgumentParser(
       description='Check links in the documentation.')
-  parser.add_argument('--config', default='check-links.toml',
+  parser.add_argument('--config', default=None,
                       help='TOML configuration file.')
   parser.add_argument('--root', default='.',
                       help='Repository root. Defaults to the current directory.')
@@ -641,8 +659,8 @@ def main() -> int:
 
   root = Path(args.root).resolve()
   try:
-    issues, stats = check_links(
-        root, load_config(root, args.config), args.no_http)
+    config = load_config(root, args.config)
+    issues, stats = check_links(root, config, args.no_http, args.verbose)
   except ValueError as error:
     print(f'Configuration error: {error}', file=sys.stderr)
     return 2
