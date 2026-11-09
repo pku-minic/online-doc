@@ -1,6 +1,6 @@
 # SysY 语言规范
 
-?> SysY 官方的语言定义见[这里](https://gitlab.eduxiji.net/csc1/nscscc/compiler2021/-/blob/master/SysY%E8%AF%AD%E8%A8%80%E5%AE%9A%E4%B9%89.pdf).
+?> SysY 官方的语言定义见[这里](https://gitlab.eduxiji.net/csc1/nscscc/compiler2021/-/blob/main/SysY%E8%AF%AD%E8%A8%80%E5%AE%9A%E4%B9%89.pdf).
 <br><br>
 编译实践课所使用的 SysY 语言和官方定义略有不同: 实践课的 SysY 向下兼容官方定义.
 
