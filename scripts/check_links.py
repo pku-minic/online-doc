@@ -18,9 +18,12 @@ import argparse
 import asyncio
 import fnmatch
 import html
+import logging
+import math
 import os
 import re
 import sys
+import time
 import tomllib
 import unicodedata
 from dataclasses import dataclass
@@ -44,7 +47,9 @@ DEFAULT_CONFIG: dict[str, Any] = {
     },
     'http': {
         'timeout': 15,
-        'retries': 1,
+        'retries': 2,
+        'retry_backoff': 1,
+        'max_retry_backoff': 8,
         'workers': 8,
         'user_agent': 'pku-minic-online-doc-link-checker/1.0',
         'accepted_statuses': [401, 403, 429],
@@ -54,6 +59,10 @@ DEFAULT_CONFIG: dict[str, Any] = {
     },
     'ignore': [],
 }
+
+LOGGER = logging.getLogger(__name__)
+RETRYABLE_STATUSES = {502, 503, 504}
+UNVERIFIED_CATEGORY = 'remote-unverified'
 
 BARE_URL_RE = re.compile(r'(?:(?:https?:)?//)[^\s<>\'"]+')
 MARKDOWN = MarkdownIt(
@@ -123,6 +132,7 @@ class RemoteResponse:
   content_type: str
   body: bytes
   final_url: str
+  request_id: str = ''
 
 
 @dataclass(frozen=True)
@@ -130,6 +140,7 @@ class RemoteResult:
   ok: bool
   message: str
   status: int | None = None
+  category: str = 'remote-http'
 
 
 @dataclass(frozen=True)
@@ -173,7 +184,7 @@ class IgnoreRule:
     if self.line is not None and link.line != self.line:
       return False
     if issue is None:
-      return True
+      return self.category is None and self.status is None and not self.statuses
     if self.category is not None and issue.category != self.category:
       return False
     if self.status is not None and issue.status != self.status:
@@ -528,21 +539,44 @@ async def request_once(client: httpx.AsyncClient, url: str, method: str, http_co
         response.headers.get('content-type', ''),
         body,
         str(response.url),
+        response.headers.get('x-github-request-id') or response.headers.get('x-request-id', ''),
     )
 
 
+def retry_settings(http_config: dict[str, Any]) -> tuple[int, float, float]:
+  retries = int(http_config.get('retries', DEFAULT_CONFIG['http']['retries']))
+  backoff = float(http_config.get('retry_backoff', DEFAULT_CONFIG['http']['retry_backoff']))
+  max_backoff = float(http_config.get('max_retry_backoff', DEFAULT_CONFIG['http']['max_retry_backoff']))
+  if retries < 0:
+    raise ValueError('http.retries must be non-negative.')
+  if not all(math.isfinite(value) and value >= 0 for value in (backoff, max_backoff)):
+    raise ValueError('http.retry_backoff and http.max_retry_backoff must be finite and non-negative.')
+  return retries, min(backoff, max_backoff), max_backoff
+
+
 async def request_with_retries(client: httpx.AsyncClient, url: str, method: str, http_config: dict[str, Any], read_body: bool) -> RemoteResponse:
-  retries = int(http_config.get('retries', 1))
-  last_error: Exception | None = None
+  retries, delay, max_delay = retry_settings(http_config)
   for attempt in range(retries + 1):
+    started = time.monotonic()
     try:
-      return await request_once(client, url, method, http_config, read_body)
+      response = await request_once(client, url, method, http_config, read_body)
     except httpx.HTTPError as error:
-      last_error = error
-      if attempt < retries:
-        await asyncio.sleep(0.5 * (attempt + 1))
-  assert last_error is not None
-  raise last_error
+      LOGGER.info('%s %s attempt=%d/%d error=%s elapsed=%.3fs',
+                  method, url, attempt + 1, retries + 1, format_error(error), time.monotonic() - started)
+      if attempt == retries:
+        raise
+    else:
+      LOGGER.info('%s %s attempt=%d/%d status=%d elapsed=%.3fs final_url=%s request_id=%s',
+                  method, url, attempt + 1, retries + 1, response.status,
+                  time.monotonic() - started, response.final_url, response.request_id or '-')
+      if (response.status not in RETRYABLE_STATUSES
+          or status_is_accepted(response.status, http_config)
+          or attempt == retries):
+        return response
+    LOGGER.info('Retrying %s %s in %.3fs', method, url, delay)
+    await asyncio.sleep(delay)
+    delay = min(delay * 2, max_delay)
+  raise AssertionError('unreachable')
 
 
 def is_html_content(content_type: str, url: str) -> bool:
@@ -561,6 +595,9 @@ def parse_remote_anchors(response: RemoteResponse) -> set[str]:
 
 def evaluate_remote_response(fragment: str, response: RemoteResponse, http_config: dict[str, Any], needs_fragment: bool) -> RemoteResult:
   if not status_is_accepted(response.status, http_config):
+    if 500 <= response.status <= 599:
+      return RemoteResult(False, f'HTTP {response.status}; server failure, link could not be verified',
+                          response.status, UNVERIFIED_CATEGORY)
     return RemoteResult(False, f'HTTP {response.status}', response.status)
   if not needs_fragment:
     return RemoteResult(True, 'ok', response.status)
@@ -574,7 +611,8 @@ def evaluate_remote_response(fragment: str, response: RemoteResponse, http_confi
 
 
 def format_error(error: Exception) -> str:
-  return str(error) or error.__class__.__name__
+  detail = str(error)
+  return f'{error.__class__.__name__}: {detail}' if detail else error.__class__.__name__
 
 
 async def check_remote_by_get(
@@ -588,7 +626,7 @@ async def check_remote_by_get(
     response = await request_with_retries(client, base_url, 'GET', http_config, needs_fragment)
     return evaluate_remote_response(fragment, response, http_config, needs_fragment)
   except httpx.HTTPError as error:
-    return RemoteResult(False, f'request failed: {format_error(error)}')
+    return RemoteResult(False, f'request failed: {format_error(error)}', category=UNVERIFIED_CATEGORY)
 
 
 async def check_remote_link(client: httpx.AsyncClient, url: str, http_config: dict[str, Any]) -> RemoteResult:
@@ -600,13 +638,7 @@ async def check_remote_link(client: httpx.AsyncClient, url: str, http_config: di
   except httpx.HTTPError:
     return await check_remote_by_get(client, base_url, fragment, http_config, needs_fragment)
   if needs_fragment or not status_is_accepted(head.status, http_config):
-    try:
-      get = await request_with_retries(client, base_url, 'GET', http_config, needs_fragment)
-      return evaluate_remote_response(fragment, get, http_config, needs_fragment)
-    except httpx.HTTPError as error:
-      if status_is_accepted(head.status, http_config):
-        return RemoteResult(True, 'HEAD succeeded; fragment could not be verified', head.status)
-      return RemoteResult(False, f'request failed after HTTP {head.status}: {format_error(error)}', head.status)
+    return await check_remote_by_get(client, base_url, fragment, http_config, needs_fragment)
   return evaluate_remote_response(fragment, head, http_config, False)
 
 
@@ -615,6 +647,7 @@ async def check_remote_links(
     http_config: dict[str, Any],
     verbose: bool,
 ) -> list[Issue]:
+  retry_settings(http_config)
   concurrency = int(http_config.get('workers', 8))
   timeout = httpx.Timeout(float(http_config.get('timeout', 15)))
   headers = {
@@ -629,10 +662,11 @@ async def check_remote_links(
     async def one(url: str) -> tuple[str, RemoteResult]:
       async with semaphore:
         if verbose:
-          print(f'Checking remote link: {url} ...')
+          print(f'Checking remote link: {url} ...', flush=True)
         result = await check_remote_link(client, url, http_config)
         if verbose and not result.ok:
-          print(f'FAIL: {url}')
+          label = 'UNVERIFIED' if result.category == UNVERIFIED_CATEGORY else 'FAIL'
+          print(f'{label}: {url}', flush=True)
         return url, result
 
     results = await asyncio.gather(*(one(url) for url in sorted(remote_links)))
@@ -642,7 +676,7 @@ async def check_remote_links(
     if result.ok:
       continue
     for link in remote_links[url]:
-      issues.append(Issue(link, 'remote-http', result.message, result.status))
+      issues.append(Issue(link, result.category, result.message, result.status))
   return issues
 
 
@@ -701,11 +735,19 @@ def print_issues(issues: list[Issue]) -> None:
   if not issues:
     print('No broken links found.')
     return
-  print(f'Found {len(issues)} broken link(s):')
-  for issue in issues:
-    location = f'{issue.link.source.as_posix()}:{issue.link.line}:{issue.link.column}'
-    print(f'- {location}: {issue.link.url}')
-    print(f'  {issue.category}: {issue.message}')
+  broken = [issue for issue in issues if issue.category != UNVERIFIED_CATEGORY]
+  unverified = [issue for issue in issues if issue.category == UNVERIFIED_CATEGORY]
+  for heading, group in [
+      (f'Found {len(broken)} broken link(s):', broken),
+      (f'Temporarily unable to verify {len(unverified)} link(s):', unverified),
+  ]:
+    if not group:
+      continue
+    print(heading)
+    for issue in group:
+      location = f'{issue.link.source.as_posix()}:{issue.link.line}:{issue.link.column}'
+      print(f'- {location}: {issue.link.url}')
+      print(f'  {issue.category}: {issue.message}')
 
 
 def main() -> int:
@@ -718,9 +760,11 @@ def main() -> int:
   parser.add_argument('--no-http', action='store_true',
                       help='Skip remote HTTP(S) checks.')
   parser.add_argument('--verbose', action='store_true',
-                      help='Print checked link counts.')
+                      help='Print progress, request attempts, retry delays, and checked link counts.')
   args = parser.parse_args()
 
+  logging.basicConfig(format='%(asctime)s %(message)s', level=logging.WARNING)
+  LOGGER.setLevel(logging.INFO if args.verbose else logging.WARNING)
   root = Path(args.root).resolve()
   try:
     config = load_config(root, args.config)
@@ -734,7 +778,9 @@ def main() -> int:
         'Checked {files} file(s), {links} link(s), {remote_links} remote occurrence(s) '
         '({unique_remote_links} unique).'.format(**stats)
     )
-  return 1 if issues else 0
+  if any(issue.category != UNVERIFIED_CATEGORY for issue in issues):
+    return 1
+  return 3 if issues else 0
 
 
 if __name__ == '__main__':
