@@ -7,7 +7,11 @@ docs_root = "docs"
 
 [http]
 timeout = 15
-retries = 1
+# Additional attempts per method for network errors and HTTP 502/503/504.
+retries = 2
+# Exponential backoff in seconds, capped at max_retry_backoff.
+retry_backoff = 1
+max_retry_backoff = 8
 workers = 16
 user_agent = "pku-minic-online-doc-link-checker/1.0"
 accepted_statuses = [401, 403, 429]
