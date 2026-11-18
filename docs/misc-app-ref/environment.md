@@ -74,11 +74,12 @@ compiler 阶段 输入文件 -o 输出文件
 实验环境中已经配置了如下工具:
 
 * **必要的工具:** `git`, `flex`, `bison`, `python3`.
-* **构建工具:** `make`, `cmake`.
+* **构建工具:** `make`, `cmake`, `bear`.
 * **运行工具:** `qemu-user-static`.
 * **编译工具链:** Rust 工具链, LLVM 工具链.
 * **Koopa IR 相关工具:** `libkoopa` (Koopa 的 C/C++ 库), `koopac` (Koopa IR 到 LLVM IR 转换器).
 * **测试脚本:** `autotest`.
+* **C++ 语言服务器:** `llvm-clangd`.
 
 举例:
 
@@ -113,6 +114,22 @@ qemu-riscv32-static hello; echo $?
 ```
 
 需要注意的是, 程序的 `main` 函数的返回值类型是 `int`, 即支持返回 32 位的返回值. 但你也许会发现, 你使用 `echo $?` 看到的返回值永远都位于 $[0, 255]$ 的区间内. 这是因为 Docker 实验环境内实际上运行的是 Linux 操作系统, Linux 程序退出时会使用 `exit` 系统调用传递返回值, 但接收返回值的一方可能会使用 `wait`, `waitpid` 等系统调用处理返回值, 此时只有返回值的低 8 位会被保留.
+
+## C++ 语言服务器
+
+[语言服务协议](https://microsoft.github.io/language-server-protocol/overviews/lsp/overview/) (Language Server Protocal, LSP) 是由微软提出的, 用于在工具与编辑器前端之间通信的标准协议. [`clangd`](https://clangd.llvm.org/) 是 [LLVM](https://llvm.org/) 项目下为 C/C++ 提供语言服务的工具, 也是目前支持 C++ 开发最完善, 体验最好的语言服务器之一.
+
+![`clangd` 提供的部分功能](example-clangd.png)
+
+我们在实验环境中为你内置了最新版本的 `clangd`. 为了让你获得最舒适的开发体验, 并避免潜在的环境依赖冲突, 我们推荐使用 VS Code 的 `Dev Containers` 插件来连接实验环境. 同时, 我们也为你提供了相应的 Dev Container 配置模板.
+
+为了让 `clangd` 能够准确分析你的代码 (实现完整的跳转和补全功能), 你需要为它提供一个名为 `compile_commands.json` 的编译数据库 (Compilation Database):
+* 如果你使用 CMake 构建项目, 只需在 CMake 配置中启用导出命令即可 (添加参数 `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`).
+* 如果你使用 Makefile 构建项目, 可以使用 `bear` 工具来拦截编译过程并自动生成该文件 (如 `bear -- make`).
+
+值得一提的是, `clangd` 内部集成了代码格式化工具 `clang-format`. 这意味着你可以直接利用它在保存时自动格式化你的 C++ 代码, 而不必额外部署其他格式化插件. 如果你想自定义代码格式化风格, 可以使用如 [Clang-Format Configurator](https://clang-format-configurator.site/) 等在线可视化工具来生成配置文件 (`.clang-format`).
+
+如需了解更详细的用法, 你可以查阅 [`clangd` 官方文档](https://clangd.llvm.org/) 以及 [`clang-format` 官方文档](https://clang.llvm.org/docs/ClangFormat.html).
 
 ## 测试你的编译器
 
